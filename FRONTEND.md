@@ -84,6 +84,15 @@ This is a professional, modern, and fully responsive frontend application built 
 - Animated background effects
 - Scroll indicator to guide users
 
+#### ResearchBot Section (NEW!)
+- AI-powered research assistant with confidence scoring
+- Topic input form with real-time processing
+- Structured results table with 6 research categories
+- Color-coded confidence indicators (High/Medium/Low)
+- Export functionality (JSON and CSV formats)
+- Loading animation during research generation
+- Responsive design for all devices
+
 #### Features Section
 - Grid layout showcasing 6 key features
 - Hover effects on cards for interactivity
@@ -143,6 +152,15 @@ Manages animations throughout the page:
 - Intersection Observer for scroll-based animations
 - Counter animations for statistics
 - Fade-in effects for cards
+
+### ResearchBot Class (NEW!)
+Manages AI research functionality:
+- Topic input processing
+- Mock AI research generation with confidence scores
+- Structured data generation (6 categories)
+- Confidence level calculation and visualization
+- JSON and CSV export capabilities
+- Loading state management
 
 ### FormHandler Class
 Handles contact form:
@@ -243,13 +261,22 @@ Enhances accessibility:
 
 ## 📈 Future Enhancements
 
+### ResearchBot Enhancements
+- [ ] Integration with AWS Bedrock for real AI processing
+- [ ] Lambda function orchestration for scalability
+- [ ] DynamoDB for research history storage
+- [ ] API Gateway for backend connectivity
+- [ ] More research categories and customization
+- [ ] User accounts and saved research
+
+### General Enhancements
 - [ ] Dark mode toggle
 - [ ] More interactive animations
 - [ ] Blog section
 - [ ] Project showcase
 - [ ] Multi-language support
 - [ ] PWA features
-- [ ] Integration with backend API
+- [ ] Additional backend API integrations
 
 ## 🤝 Contributing
 

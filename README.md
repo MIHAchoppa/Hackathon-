@@ -23,6 +23,10 @@ This repository contains the codebase for an innovative hackathon project. Our g
 
 ## ✨ Features
 
+- **AI ResearchBot**: Intelligent research assistant with confidence scoring on any topic
+- **Probability-Based Insights**: Each research point includes confidence scores (0-100%)
+- **Structured Research**: Organized insights covering overview, statistics, pros/cons, and recommendations
+- **Export Functionality**: Download research results as JSON or CSV
 - **Innovative Solution**: Addresses specific problem domain with modern technology
 - **Scalable Architecture**: Built with best practices and scalability in mind
 - **Open Source**: Community-driven development with transparent processes
@@ -70,26 +74,51 @@ Before you begin, ensure you have the following installed:
 
 ## 📖 Usage
 
-Detailed usage instructions will be added as the project develops. Here's a quick overview:
+### AI ResearchBot
+
+The ResearchBot feature allows you to generate comprehensive research insights with AI confidence scoring:
+
+1. **Navigate to the Research section** on the homepage
+2. **Enter a topic** in the input field (e.g., "Electric Cars", "AI Technology", "Renewable Energy")
+3. **Click the "Research" button** to generate insights
+4. **View results** organized by sections with confidence scores:
+   - 🟢 Green badges: High confidence (90%+)
+   - 🟡 Yellow badges: Medium confidence (70-89%)
+   - 🔴 Red badges: Low confidence (<70%)
+5. **Export your research** using the JSON or CSV export buttons
+
+### Development
+
+For local development:
 
 ```bash
-# Example command or code snippet
-npm run build    # Build the project
-npm test         # Run tests
-npm run lint     # Lint code
+# Start a local server
+python -m http.server 8000
+# or
+npx http-server
+
+# Open in browser
+# Navigate to http://localhost:8000
 ```
 
 ## 📁 Project Structure
 
 ```
 Hackathon-/
-├── src/                # Source files
-├── tests/              # Test files
-├── docs/               # Documentation
+├── index.html          # Main HTML with ResearchBot UI
+├── script.js           # JavaScript including ResearchBot class
+├── styles.css          # Styling for all components
+├── FRONTEND.md         # Frontend documentation
 ├── .gitignore          # Git ignore rules
-├── README.md           # This file
-└── package.json        # Project metadata and dependencies
+└── README.md           # This file
 ```
+
+### Key Components
+
+- **ResearchBot Class**: Handles topic research, confidence scoring, and export functionality
+- **Research Section**: Interactive UI for entering topics and viewing results
+- **Confidence Display**: Visual indicators with color-coded badges and progress bars
+- **Export System**: JSON and CSV download capabilities
 
 ## 🤝 Contributing
 
