@@ -518,6 +518,149 @@ class AccessibilityEnhancer {
 }
 
 // ===================================
+// Voice Recorder for Research Input
+// ===================================
+
+class VoiceRecorder {
+    constructor(callback) {
+        this.callback = callback;
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.isRecording = false;
+        this.voiceButton = document.getElementById('voice-input-btn');
+        this.statusIndicator = document.getElementById('voice-status');
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.voiceButton) return;
+        
+        this.voiceButton.addEventListener('click', () => this.toggleRecording());
+        
+        // Check if browser supports MediaRecorder
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            this.voiceButton.disabled = true;
+            this.voiceButton.title = 'Voice recording not supported in this browser';
+        }
+    }
+    
+    async toggleRecording() {
+        if (this.isRecording) {
+            this.stopRecording();
+        } else {
+            await this.startRecording();
+        }
+    }
+    
+    async startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            // Use audio/webm for broader compatibility
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
+            this.mediaRecorder = new MediaRecorder(stream, { mimeType });
+            this.audioChunks = [];
+            
+            this.mediaRecorder.addEventListener('dataavailable', (event) => {
+                if (event.data.size > 0) {
+                    this.audioChunks.push(event.data);
+                }
+            });
+            
+            this.mediaRecorder.addEventListener('stop', () => {
+                this.processRecording();
+            });
+            
+            this.mediaRecorder.start();
+            this.isRecording = true;
+            
+            // Update UI
+            this.voiceButton.classList.add('recording');
+            this.statusIndicator.style.display = 'flex';
+            
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            alert('Unable to access microphone. Please check permissions and try again.');
+        }
+    }
+    
+    stopRecording() {
+        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+            this.mediaRecorder.stop();
+            this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            this.isRecording = false;
+            
+            // Update UI
+            this.voiceButton.classList.remove('recording');
+            this.statusIndicator.style.display = 'none';
+        }
+    }
+    
+    async processRecording() {
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        
+        // Show transcription loading
+        this.statusIndicator.style.display = 'flex';
+        this.statusIndicator.querySelector('.status-text').textContent = 'Transcribing...';
+        
+        try {
+            // Send to backend for transcription
+            const transcription = await this.transcribeAudio(audioBlob);
+            
+            // Hide status
+            this.statusIndicator.style.display = 'none';
+            
+            // Call callback with transcription
+            if (this.callback && transcription) {
+                this.callback(transcription);
+            }
+        } catch (error) {
+            console.error('Transcription error:', error);
+            this.statusIndicator.style.display = 'none';
+            alert('Error transcribing audio. Please try again.');
+        }
+    }
+    
+    async transcribeAudio(audioBlob) {
+        // For now, use mock transcription
+        // In production, this would call the backend Lambda function
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Mock transcription results
+        const mockTopics = [
+            'Electric Cars',
+            'Artificial Intelligence',
+            'Renewable Energy',
+            'Blockchain Technology',
+            'Quantum Computing'
+        ];
+        
+        return mockTopics[Math.floor(Math.random() * mockTopics.length)];
+        
+        // Production implementation would be:
+        /*
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+        
+        const response = await fetch('/api/transcribe', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error('Transcription failed');
+        }
+        
+        const data = await response.json();
+        return data.transcription;
+        */
+    }
+}
+
+// ===================================
 // ResearchBot with AI Confidence Scoring
 // ===================================
 
