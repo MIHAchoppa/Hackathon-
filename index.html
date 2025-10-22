@@ -33,9 +33,139 @@
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#team" class="nav-link">Team</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><button class="btn-settings" id="open-settings" aria-label="Settings" title="Configure API Keys">⚙️</button></li>
             </ul>
         </div>
     </nav>
+
+    <!-- API Settings Modal -->
+    <div class="settings-modal" id="settings-modal" role="dialog" aria-labelledby="settings-title" aria-modal="true" style="display: none;">
+        <div class="settings-overlay" id="settings-overlay"></div>
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2 id="settings-title">⚙️ API Configuration</h2>
+                <button class="btn-close" id="close-settings" aria-label="Close settings">×</button>
+            </div>
+            
+            <div class="settings-body">
+                <div class="settings-status" id="settings-status">
+                    <div class="status-indicator" id="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">No API keys configured</span>
+                    </div>
+                </div>
+
+                <div class="api-key-section">
+                    <div class="section-header">
+                        <h3>🤖 AWS Bedrock API</h3>
+                        <p class="section-description">Configure your AWS Bedrock credentials for AI-powered research</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aws-access-key">AWS Access Key ID</label>
+                        <div class="input-with-toggle">
+                            <input 
+                                type="password" 
+                                id="aws-access-key" 
+                                name="aws-access-key"
+                                placeholder="Enter your AWS Access Key ID"
+                                class="api-input"
+                            >
+                            <button class="toggle-visibility" data-target="aws-access-key" title="Toggle visibility">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aws-secret-key">AWS Secret Access Key</label>
+                        <div class="input-with-toggle">
+                            <input 
+                                type="password" 
+                                id="aws-secret-key" 
+                                name="aws-secret-key"
+                                placeholder="Enter your AWS Secret Access Key"
+                                class="api-input"
+                            >
+                            <button class="toggle-visibility" data-target="aws-secret-key" title="Toggle visibility">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aws-region">AWS Region</label>
+                        <select id="aws-region" name="aws-region" class="api-input">
+                            <option value="">Select region...</option>
+                            <option value="us-east-1">US East (N. Virginia) - us-east-1</option>
+                            <option value="us-west-2">US West (Oregon) - us-west-2</option>
+                            <option value="ap-southeast-1">Asia Pacific (Singapore) - ap-southeast-1</option>
+                            <option value="eu-west-1">Europe (Ireland) - eu-west-1</option>
+                        </select>
+                    </div>
+                    
+                    <div class="api-help">
+                        <p><strong>Need AWS Bedrock credentials?</strong></p>
+                        <ol>
+                            <li>Sign in to <a href="https://console.aws.amazon.com/" target="_blank" rel="noopener noreferrer">AWS Console</a></li>
+                            <li>Navigate to IAM → Users → Create User</li>
+                            <li>Attach the <code>AmazonBedrockFullAccess</code> policy</li>
+                            <li>Create access keys in Security Credentials tab</li>
+                            <li>Copy your Access Key ID and Secret Access Key</li>
+                        </ol>
+                        <p class="help-link">
+                            📚 <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html" target="_blank" rel="noopener noreferrer">AWS Bedrock Getting Started Guide</a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="api-key-section">
+                    <div class="section-header">
+                        <h3>🔮 OpenAI API (Alternative)</h3>
+                        <p class="section-description">Use OpenAI's GPT models as an alternative to AWS Bedrock</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="openai-key">OpenAI API Key</label>
+                        <div class="input-with-toggle">
+                            <input 
+                                type="password" 
+                                id="openai-key" 
+                                name="openai-key"
+                                placeholder="sk-..."
+                                class="api-input"
+                            >
+                            <button class="toggle-visibility" data-target="openai-key" title="Toggle visibility">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="api-help">
+                        <p><strong>Need an OpenAI API key?</strong></p>
+                        <ol>
+                            <li>Visit <a href="https://platform.openai.com/" target="_blank" rel="noopener noreferrer">OpenAI Platform</a></li>
+                            <li>Sign up or log in to your account</li>
+                            <li>Navigate to API Keys section</li>
+                            <li>Click "Create new secret key"</li>
+                            <li>Copy and save your API key securely</li>
+                        </ol>
+                        <p class="help-link">
+                            📚 <a href="https://platform.openai.com/docs/quickstart" target="_blank" rel="noopener noreferrer">OpenAI API Quickstart</a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="security-notice">
+                    <div class="notice-icon">🔒</div>
+                    <div class="notice-content">
+                        <strong>Security Note:</strong> Your API keys are stored locally in your browser and never sent to our servers. 
+                        They are only used to make direct API calls to AWS or OpenAI from your browser. 
+                        Keep your keys secure and never share them publicly.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-footer">
+                <button class="btn btn-secondary" id="clear-keys">Clear All Keys</button>
+                <button class="btn btn-primary" id="save-settings">Save Configuration</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <header id="home" class="hero" role="banner">
