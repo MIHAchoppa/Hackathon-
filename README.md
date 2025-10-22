@@ -298,11 +298,36 @@ Project Maintainer: **MIHAchoppa**
 
 ## 🙏 Acknowledgments
 
-- Thanks to all contributors who participate in this project
-- Inspiration and resources from the open-source community
+### AI/ML Services
+- **AWS Bedrock** - For providing access to high-quality foundation models (Claude)
+- **Groq** - For ultra-fast LLM inference with Llama 3
+- **Anthropic** - For developing Claude, the primary AI model
+
+### AWS Services
+- **AWS Lambda** - Serverless compute platform
+- **Amazon S3** - Reliable object storage
+- **API Gateway** - RESTful API management
+- **CloudWatch** - Monitoring and logging
+- **Secrets Manager** - Secure key storage
+
+### Open Source Community
+- Python community for excellent libraries (Boto3, Requests)
+- JavaScript community for modern web standards
+- GitHub for hosting and collaboration tools
+
+### Inspiration
+- Research automation needs of students and professionals
+- The push for transparent and explainable AI
+- Autonomous systems that make intelligent decisions
+
+### Special Thanks
 - Hackathon organizers and participants
-- Special thanks to everyone who provides feedback and suggestions
+- Beta testers who provided feedback
+- Everyone who believes in transparent AI
 
 ---
 
-<p align="center">Made with ❤️ for the Hackathon Community</p>
+<p align="center">
+  Made with ❤️ for the Hackathon Community<br>
+  <strong>Empowering Research Through Autonomous AI</strong>
+</p>
