@@ -123,6 +123,64 @@
         </div>
     </section>
 
+    <!-- Audiobook Generator Section -->
+    <section id="audiobook-generator" class="audiobook-generator" style="display: none;" aria-labelledby="audiobook-heading">
+        <div class="container">
+            <h2 id="audiobook-heading" class="section-title">🎙️ Generate Audiobook</h2>
+            <p class="section-subtitle">Convert your book to high-quality audio using AI Text-to-Speech</p>
+            
+            <div class="audiobook-settings">
+                <div class="form-group">
+                    <label for="audiobook-voice">Voice Selection</label>
+                    <select id="audiobook-voice" required>
+                        <option value="">Loading voices...</option>
+                    </select>
+                </div>
+                
+                <div class="audiobook-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="include-confidence" checked>
+                        <span>Include confidence scores in narration</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="include-toc" checked>
+                        <span>Generate table of contents audio</span>
+                    </label>
+                </div>
+                
+                <div class="audiobook-actions">
+                    <button class="btn btn-primary" id="generate-audiobook">
+                        🎙️ Generate Audiobook
+                    </button>
+                    <button class="btn btn-secondary" id="close-audiobook">Close</button>
+                </div>
+            </div>
+            
+            <div class="audiobook-conversion" id="conversion-progress" style="display: none;">
+                <h3>Converting to Audio...</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="audiobook-progress-bar"></div>
+                    </div>
+                    <p class="progress-text" id="audiobook-progress-text">Initializing...</p>
+                </div>
+                <div class="conversion-log-container">
+                    <h4>Conversion Log</h4>
+                    <div class="conversion-log" id="conversion-log"></div>
+                </div>
+            </div>
+            
+            <div class="audiobook-results" id="conversion-results" style="display: none;">
+                <div class="results-actions">
+                    <button class="btn btn-primary" id="download-all-audio">Download All</button>
+                </div>
+                <div id="audiobook-results-container">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Book Generator Section -->
     <section id="book-generator" class="book-generator" style="display: none;" aria-labelledby="book-heading">
         <div class="container">
@@ -196,6 +254,7 @@
                         <button class="btn btn-secondary btn-sm" id="download-html">Download HTML</button>
                         <button class="btn btn-secondary btn-sm" id="download-pdf">Download PDF</button>
                         <button class="btn btn-secondary btn-sm" id="download-markdown">Download Markdown</button>
+                        <button class="btn btn-primary btn-sm" id="create-audiobook">🎙️ Create Audiobook</button>
                         <button class="btn btn-primary btn-sm" id="edit-book">Edit</button>
                     </div>
                 </div>
