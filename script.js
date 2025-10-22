@@ -518,6 +518,214 @@ class AccessibilityEnhancer {
 }
 
 // ===================================
+// Autonomous Mode Manager
+// ===================================
+
+class AutonomousMode {
+    constructor(researchBot) {
+        this.researchBot = researchBot;
+        this.toggle = document.getElementById('autonomous-mode-toggle');
+        this.configPanel = document.getElementById('autonomous-config');
+        this.startButton = document.getElementById('start-autonomous');
+        this.stopButton = document.getElementById('stop-autonomous');
+        this.statusIndicator = document.querySelector('.status-indicator');
+        this.statusText = document.querySelector('.status-text');
+        
+        this.isRunning = false;
+        this.intervalId = null;
+        this.executionCount = 0;
+        
+        // Pre-defined topics for autonomous research
+        this.predefinedTopics = [
+            'Artificial Intelligence',
+            'Machine Learning',
+            'Quantum Computing',
+            'Blockchain Technology',
+            'Electric Cars',
+            'Renewable Energy',
+            'Space Exploration',
+            'Biotechnology',
+            'Cybersecurity',
+            'Internet of Things',
+            '5G Technology',
+            'Virtual Reality',
+            'Augmented Reality',
+            'Cloud Computing',
+            'Edge Computing',
+            'Nanotechnology',
+            'Gene Editing',
+            'Autonomous Vehicles',
+            'Smart Cities',
+            'Sustainable Agriculture'
+        ];
+        
+        this.usedTopics = new Set();
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.toggle) return;
+        
+        this.toggle.addEventListener('change', () => this.toggleConfig());
+        this.startButton?.addEventListener('click', () => this.start());
+        this.stopButton?.addEventListener('click', () => this.stop());
+    }
+    
+    toggleConfig() {
+        if (this.toggle.checked) {
+            this.configPanel.style.display = 'block';
+        } else {
+            this.configPanel.style.display = 'none';
+            this.stop();
+        }
+    }
+    
+    start() {
+        const interval = parseInt(document.getElementById('auto-interval').value) * 1000;
+        const topicMode = document.getElementById('auto-topic-select').value;
+        
+        this.isRunning = true;
+        this.executionCount = 0;
+        this.usedTopics.clear();
+        
+        // Update UI
+        this.startButton.style.display = 'none';
+        this.stopButton.style.display = 'inline-block';
+        this.statusIndicator.classList.remove('inactive');
+        this.statusIndicator.classList.add('active');
+        this.statusText.textContent = 'Active - Running autonomous mode';
+        
+        console.log('🤖 Autonomous mode started');
+        
+        // Execute immediately
+        this.executeAutonomous();
+        
+        // Schedule recurring executions
+        this.intervalId = setInterval(() => {
+            this.executeAutonomous();
+        }, interval);
+    }
+    
+    stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+        
+        this.isRunning = false;
+        
+        // Update UI
+        this.startButton.style.display = 'inline-block';
+        this.stopButton.style.display = 'none';
+        this.statusIndicator.classList.remove('active');
+        this.statusIndicator.classList.add('inactive');
+        this.statusText.textContent = `Inactive - Completed ${this.executionCount} executions`;
+        
+        console.log(`🤖 Autonomous mode stopped after ${this.executionCount} executions`);
+    }
+    
+    async executeAutonomous() {
+        this.executionCount++;
+        console.log(`🤖 Autonomous execution #${this.executionCount}`);
+        
+        // Select topic
+        const topic = this.selectTopic();
+        console.log(`📚 Selected topic: ${topic}`);
+        
+        // Update status
+        this.statusText.textContent = `Active - Researching "${topic}" (${this.executionCount})`;
+        
+        // Set topic in input field
+        const topicInput = document.getElementById('research-topic');
+        if (topicInput) {
+            topicInput.value = topic;
+        }
+        
+        try {
+            // Execute research
+            await this.researchBot.performResearch(topic);
+            
+            // Auto-generate book if enabled
+            const autoBookGen = document.getElementById('auto-book-generation');
+            if (autoBookGen && autoBookGen.checked) {
+                await this.autoGenerateBook();
+            }
+            
+            this.statusText.textContent = `Active - Completed "${topic}" (${this.executionCount})`;
+        } catch (error) {
+            console.error('Autonomous execution error:', error);
+            this.statusText.textContent = `Active - Error on execution ${this.executionCount}`;
+        }
+    }
+    
+    selectTopic() {
+        const topicMode = document.getElementById('auto-topic-select').value;
+        
+        if (topicMode === 'predefined') {
+            // Get unused topics
+            const availableTopics = this.predefinedTopics.filter(t => !this.usedTopics.has(t));
+            
+            // Reset if all topics have been used
+            if (availableTopics.length === 0) {
+                this.usedTopics.clear();
+                return this.predefinedTopics[0];
+            }
+            
+            // Select random from available
+            const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
+            this.usedTopics.add(topic);
+            return topic;
+        } else {
+            // Random topic generation
+            return this.predefinedTopics[Math.floor(Math.random() * this.predefinedTopics.length)];
+        }
+    }
+    
+    async autoGenerateBook() {
+        console.log('📖 Auto-generating book...');
+        
+        // Wait a moment for research to complete
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Check if there are results
+        if (!this.researchBot.currentResults) {
+            console.log('No research results available for book generation');
+            return;
+        }
+        
+        // Select all sections automatically
+        const checkboxes = document.querySelectorAll('.section-checkbox');
+        checkboxes.forEach(cb => cb.checked = true);
+        
+        // Get book generator instance and trigger generation
+        if (window.bookGeneratorInstance) {
+            // Auto-fill with defaults
+            const titleInput = document.getElementById('book-title');
+            const authorInput = document.getElementById('book-author');
+            const styleSelect = document.getElementById('book-style');
+            const structureSelect = document.getElementById('book-structure');
+            
+            if (titleInput && !titleInput.value) {
+                titleInput.value = `Understanding ${this.researchBot.currentResults.topic}`;
+            }
+            if (authorInput && !authorInput.value) {
+                authorInput.value = 'AI Autonomous System';
+            }
+            if (styleSelect && !styleSelect.value) {
+                styleSelect.value = 'conversational';
+            }
+            if (structureSelect && !structureSelect.value) {
+                structureSelect.value = 'chapters';
+            }
+            
+            // Trigger book generation without opening UI
+            await window.bookGeneratorInstance.generateBookAutonomous();
+        }
+    }
+}
+
+// ===================================
 // ResearchBot with AI Confidence Scoring
 // ===================================
 
@@ -550,6 +758,10 @@ class ResearchBot {
         
         if (!topic) return;
         
+        await this.performResearch(topic);
+    }
+    
+    async performResearch(topic) {
         // Show loading, hide results
         this.showLoading();
         
@@ -927,6 +1139,76 @@ class BookGenerator {
         this.bookPreview.scrollIntoView({ behavior: 'smooth' });
     }
     
+    async generateBookAutonomous() {
+        // Autonomous book generation with defaults
+        console.log('📖 Generating book autonomously...');
+        
+        // Get selected sections from research results
+        const checkboxes = document.querySelectorAll('.section-checkbox:checked');
+        
+        if (checkboxes.length === 0) {
+            console.log('No sections selected for book generation');
+            return;
+        }
+        
+        // Get the selected sections data
+        this.selectedSections = [];
+        checkboxes.forEach(checkbox => {
+            const index = parseInt(checkbox.dataset.index);
+            if (this.researchBot.currentResults) {
+                this.selectedSections.push(this.researchBot.currentResults.results[index]);
+            }
+        });
+        
+        // Use defaults
+        const title = document.getElementById('book-title').value.trim();
+        const author = document.getElementById('book-author').value.trim();
+        const style = document.getElementById('book-style').value || 'conversational';
+        const structure = document.getElementById('book-structure').value || 'chapters';
+        
+        if (!title || !author) {
+            console.log('Missing title or author for autonomous book generation');
+            return;
+        }
+        
+        // Generate book content
+        const bookHTML = this.createBookContent(this.escapeHtml(title), this.escapeHtml(author), style, structure);
+        
+        // Store content but don't display (autonomous mode)
+        this.bookContent.innerHTML = bookHTML;
+        
+        console.log(`📖 Book generated: "${title}" by ${author}`);
+        
+        // Auto-export as markdown
+        this.exportMarkdownSilent(title, author, structure);
+    }
+    
+    exportMarkdownSilent(title, author, structure) {
+        // Silent export for autonomous mode (logs instead of downloads)
+        let markdown = `# ${title}\n\n`;
+        markdown += `**By ${author}**\n\n`;
+        markdown += `*${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}*\n\n`;
+        markdown += `---\n\n`;
+        
+        if (structure === 'chapters') {
+            this.selectedSections.forEach((section, index) => {
+                markdown += `## Chapter ${index + 1}: ${section.section}\n\n`;
+                markdown += `${section.details}\n\n`;
+                markdown += `*Research confidence: ${section.confidence}%*\n\n`;
+                markdown += `---\n\n`;
+            });
+        } else {
+            this.selectedSections.forEach((section, index) => {
+                markdown += `## ${section.section}\n\n`;
+                markdown += `${section.details}\n\n`;
+                markdown += `*Research confidence: ${section.confidence}%*\n\n`;
+                markdown += `---\n\n`;
+            });
+        }
+        
+        console.log(`📄 Book content generated (${markdown.length} characters)`);
+    }
+    
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -1208,7 +1490,14 @@ class App {
         // Initialize all modules
         new Navigation();
         const researchBot = new ResearchBot();
-        new BookGenerator(researchBot);
+        const bookGenerator = new BookGenerator(researchBot);
+        
+        // Store book generator globally for autonomous mode access
+        window.bookGeneratorInstance = bookGenerator;
+        
+        // Initialize autonomous mode
+        new AutonomousMode(researchBot);
+        
         new AnimationController();
         new FormHandler();
         new PerformanceOptimizer();
