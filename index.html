@@ -28,6 +28,7 @@
             <ul class="nav-menu">
                 <li><a href="#home" class="nav-link">Home</a></li>
                 <li><a href="#research" class="nav-link">Research</a></li>
+                <li><a href="#book-generator" class="nav-link">Book Generator</a></li>
                 <li><a href="#features" class="nav-link">Features</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#team" class="nav-link">Team</a></li>
@@ -86,6 +87,7 @@
                     <div class="results-actions">
                         <button class="btn btn-secondary btn-sm" id="export-json">Export JSON</button>
                         <button class="btn btn-secondary btn-sm" id="export-csv">Export CSV</button>
+                        <button class="btn btn-primary btn-sm" id="create-book">Create Book</button>
                     </div>
                 </div>
                 
@@ -99,6 +101,9 @@
                     <table class="research-table">
                         <thead>
                             <tr>
+                                <th style="width: 50px;">
+                                    <input type="checkbox" id="select-all-sections" title="Select all sections">
+                                </th>
                                 <th>Section</th>
                                 <th>Details</th>
                                 <th>Confidence</th>
@@ -114,6 +119,89 @@
             <div class="research-loading" id="research-loading" style="display: none;">
                 <div class="loading-spinner"></div>
                 <p>AI is researching your topic...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Book Generator Section -->
+    <section id="book-generator" class="book-generator" style="display: none;" aria-labelledby="book-heading">
+        <div class="container">
+            <h2 id="book-heading" class="section-title">Create Your Book</h2>
+            <p class="section-subtitle">Generate a complete book from your selected research</p>
+            
+            <div class="book-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="book-title">Book Title</label>
+                        <input 
+                            type="text" 
+                            id="book-title" 
+                            placeholder="Enter your book title"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="book-author">Author Name</label>
+                        <input 
+                            type="text" 
+                            id="book-author" 
+                            placeholder="Your name"
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="book-style">Book Style</label>
+                    <select id="book-style" required>
+                        <option value="">Select a style...</option>
+                        <option value="academic">Academic - Formal research paper style</option>
+                        <option value="narrative">Narrative - Story-driven, engaging content</option>
+                        <option value="technical">Technical - Detailed technical documentation</option>
+                        <option value="educational">Educational - Teaching-focused with examples</option>
+                        <option value="executive">Executive Summary - High-level business brief</option>
+                        <option value="conversational">Conversational - Friendly, easy-to-read</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="book-structure">Book Structure</label>
+                    <select id="book-structure" required>
+                        <option value="">Select a structure...</option>
+                        <option value="chapters">Chapters - Traditional chapter-based layout</option>
+                        <option value="sections">Sections - Organized by major sections</option>
+                        <option value="qna">Q&A Format - Question and answer style</option>
+                        <option value="timeline">Timeline - Chronological progression</option>
+                        <option value="comparison">Comparison - Compare and contrast format</option>
+                    </select>
+                </div>
+                
+                <div class="book-selected-sections">
+                    <h3>Selected Sections</h3>
+                    <div id="selected-sections-list" class="sections-list">
+                        <!-- Selected sections will appear here -->
+                    </div>
+                </div>
+                
+                <div class="book-actions">
+                    <button class="btn btn-primary" id="generate-book">Generate Book</button>
+                    <button class="btn btn-secondary" id="cancel-book">Cancel</button>
+                </div>
+            </div>
+            
+            <div class="book-preview" id="book-preview" style="display: none;">
+                <div class="preview-header">
+                    <h3>Book Preview</h3>
+                    <div class="preview-actions">
+                        <button class="btn btn-secondary btn-sm" id="download-html">Download HTML</button>
+                        <button class="btn btn-secondary btn-sm" id="download-pdf">Download PDF</button>
+                        <button class="btn btn-secondary btn-sm" id="download-markdown">Download Markdown</button>
+                        <button class="btn btn-primary btn-sm" id="edit-book">Edit</button>
+                    </div>
+                </div>
+                <div class="book-content" id="book-content">
+                    <!-- Generated book content will appear here -->
+                </div>
             </div>
         </div>
     </section>
@@ -327,6 +415,7 @@
                     <ul class="footer-links">
                         <li><a href="#home">Home</a></li>
                         <li><a href="#research">Research</a></li>
+                        <li><a href="#book-generator">Book Generator</a></li>
                         <li><a href="#features">Features</a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#team">Team</a></li>
