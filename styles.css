@@ -316,6 +316,11 @@ section {
     border-color: var(--white);
 }
 
+.btn-icon {
+    margin-right: 0.25rem;
+    display: inline-block;
+}
+
 .btn-secondary:hover {
     background: var(--white);
     color: var(--primary-color);
