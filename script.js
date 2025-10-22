@@ -528,6 +528,7 @@ class ResearchBot {
         this.loadingContainer = document.getElementById('research-loading');
         this.tableBody = document.getElementById('research-table-body');
         this.currentResults = null;
+        this.agentOrchestrator = null;
         
         this.init();
     }
@@ -542,6 +543,14 @@ class ResearchBot {
         document.getElementById('export-csv')?.addEventListener('click', () => this.exportCSV());
     }
     
+    /**
+     * Set agent orchestrator for enhanced research
+     * @param {Object} orchestrator - Agent orchestrator instance
+     */
+    setAgentOrchestrator(orchestrator) {
+        this.agentOrchestrator = orchestrator;
+    }
+    
     async handleSubmit(e) {
         e.preventDefault();
         
@@ -554,12 +563,28 @@ class ResearchBot {
         this.showLoading();
         
         try {
-            // Simulate AI research with delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            let results;
             
-            // Generate research results
-            const results = this.generateResearch(topic);
-            this.currentResults = { topic, results };
+            // Use agent orchestrator if available
+            if (this.agentOrchestrator) {
+                const orchestrationResult = await this.agentOrchestrator.orchestrateResearch(topic);
+                results = orchestrationResult.research;
+                
+                // Store orchestration metrics
+                this.currentResults = { 
+                    topic, 
+                    results,
+                    agentMetrics: orchestrationResult.agentMetrics,
+                    orchestrationLog: orchestrationResult.orchestrationLog
+                };
+                
+                // Log agent activity
+                console.log('🤖 Agent Orchestration Complete:', orchestrationResult.agentMetrics);
+            } else {
+                // Fallback to standard research generation
+                results = this.generateResearch(topic);
+                this.currentResults = { topic, results };
+            }
             
             // Display results
             this.displayResults(results);
@@ -1202,7 +1227,7 @@ class App {
         }
     }
     
-    start() {
+    async start() {
         console.log('🚀 Hackathon App Initialized');
         
         // Initialize all modules
@@ -1213,6 +1238,46 @@ class App {
         new FormHandler();
         new PerformanceOptimizer();
         new AccessibilityEnhancer();
+        
+        // Initialize Autonomous Agent System (if available)
+        if (typeof AutonomousAgent !== 'undefined') {
+            console.log('🤖 Initializing Autonomous Agent System...');
+            
+            try {
+                const agent = new AutonomousAgent();
+                await agent.initialize();
+                
+                const orchestrator = new AgentOrchestrator(agent);
+                
+                // Initialize agent dashboard
+                const agentDashboard = new AgentDashboardController();
+                agentDashboard.initialize(agent);
+                
+                // Connect agent to ResearchBot
+                researchBot.setAgentOrchestrator(orchestrator);
+                
+                console.log('✅ Autonomous Agent System Active');
+                console.log('📊 Agent Status:', agent.getStatus());
+                
+                // Store globally for debugging and demo
+                window.autonomousAgent = agent;
+                window.agentOrchestrator = orchestrator;
+                window.agentDashboard = agentDashboard;
+                
+                // Add console helper commands
+                console.log(`
+🤖 AGENT COMMANDS:
+- autonomousAgent.getStatus() - Get current agent status
+- autonomousAgent.getReport() - Get full agent report
+- agentDashboard.getFormattedReport() - Get formatted report
+- agentOrchestrator.getLogs() - Get orchestration logs
+                `);
+            } catch (error) {
+                console.error('❌ Failed to initialize agent:', error);
+            }
+        } else {
+            console.log('⚠️  Agent system not loaded, using standard mode');
+        }
         
         // Log performance metrics
         if ('performance' in window) {

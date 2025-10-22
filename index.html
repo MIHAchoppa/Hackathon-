@@ -59,6 +59,53 @@
         </div>
     </header>
 
+    <!-- Agent Status Dashboard -->
+    <section id="agent-dashboard" class="agent-dashboard" style="display: none;" aria-labelledby="agent-heading">
+        <div class="container">
+            <h2 id="agent-heading" class="section-title">🤖 Autonomous Agent Monitor</h2>
+            <p class="section-subtitle">Real-time agent activity and decision-making insights</p>
+            
+            <div class="agent-status-grid">
+                <div class="status-card">
+                    <div class="status-icon">🔄</div>
+                    <div class="status-content">
+                        <h3 class="status-label">Current Phase</h3>
+                        <p class="status-value" id="agent-phase">Idle</p>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <div class="status-icon">🎯</div>
+                    <div class="status-content">
+                        <h3 class="status-label">Iteration</h3>
+                        <p class="status-value" id="agent-iteration">0</p>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <div class="status-icon">📊</div>
+                    <div class="status-content">
+                        <h3 class="status-label">Confidence Score</h3>
+                        <p class="status-value" id="agent-confidence">--</p>
+                    </div>
+                </div>
+                
+                <div class="status-card">
+                    <div class="status-icon">🧠</div>
+                    <div class="status-content">
+                        <h3 class="status-label">Memory Items</h3>
+                        <p class="status-value" id="agent-memory">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="agent-reasoning-chain" id="agent-reasoning-chain" style="display: none;">
+                <h3>Reasoning Chain</h3>
+                <div class="reasoning-steps" id="reasoning-steps"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- ResearchBot Section -->
     <section id="research" class="research" aria-labelledby="research-heading">
         <div class="container">
@@ -437,6 +484,12 @@
         </div>
     </footer>
 
+    <!-- Agent Core Scripts -->
+    <script src="agent-core.js"></script>
+    <script src="agent-integration.js"></script>
+    <script src="agent-ui.js"></script>
+    
+    <!-- Main Application Script -->
     <script src="script.js"></script>
 </body>
 </html>
