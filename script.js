@@ -518,11 +518,214 @@ class AccessibilityEnhancer {
 }
 
 // ===================================
+// API Settings Manager
+// ===================================
+
+class APISettings {
+    constructor() {
+        this.modal = document.getElementById('settings-modal');
+        this.openBtn = document.getElementById('open-settings');
+        this.closeBtn = document.getElementById('close-settings');
+        this.overlay = document.getElementById('settings-overlay');
+        this.saveBtn = document.getElementById('save-settings');
+        this.clearBtn = document.getElementById('clear-keys');
+        this.statusIndicator = document.getElementById('status-indicator');
+        
+        this.init();
+        this.loadSettings();
+        this.updateStatus();
+    }
+    
+    init() {
+        // Open modal
+        this.openBtn?.addEventListener('click', () => this.openModal());
+        
+        // Close modal
+        this.closeBtn?.addEventListener('click', () => this.closeModal());
+        this.overlay?.addEventListener('click', () => this.closeModal());
+        
+        // Save settings
+        this.saveBtn?.addEventListener('click', () => this.saveSettings());
+        
+        // Clear all keys
+        this.clearBtn?.addEventListener('click', () => this.clearAllKeys());
+        
+        // Toggle visibility buttons
+        document.querySelectorAll('.toggle-visibility').forEach(btn => {
+            btn.addEventListener('click', (e) => this.toggleVisibility(e));
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal.style.display !== 'none') {
+                this.closeModal();
+            }
+        });
+    }
+    
+    openModal() {
+        this.modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    closeModal() {
+        this.modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    
+    toggleVisibility(e) {
+        const targetId = e.currentTarget.dataset.target;
+        const input = document.getElementById(targetId);
+        
+        if (input) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                e.currentTarget.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                e.currentTarget.textContent = '👁️';
+            }
+        }
+    }
+    
+    saveSettings() {
+        const settings = {
+            awsAccessKey: document.getElementById('aws-access-key').value.trim(),
+            awsSecretKey: document.getElementById('aws-secret-key').value.trim(),
+            awsRegion: document.getElementById('aws-region').value,
+            openaiKey: document.getElementById('openai-key').value.trim(),
+            timestamp: new Date().toISOString()
+        };
+        
+        // Validate at least one API is configured
+        const hasAWS = settings.awsAccessKey && settings.awsSecretKey && settings.awsRegion;
+        const hasOpenAI = settings.openaiKey;
+        
+        if (!hasAWS && !hasOpenAI) {
+            alert('Please configure at least one API (AWS Bedrock or OpenAI) to continue.');
+            return;
+        }
+        
+        // Store in localStorage
+        try {
+            localStorage.setItem('apiSettings', JSON.stringify(settings));
+            this.updateStatus();
+            this.showNotification('Settings saved successfully!', 'success');
+            
+            // Close modal after a short delay
+            setTimeout(() => this.closeModal(), 1000);
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            this.showNotification('Error saving settings. Please try again.', 'error');
+        }
+    }
+    
+    loadSettings() {
+        try {
+            const saved = localStorage.getItem('apiSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                
+                document.getElementById('aws-access-key').value = settings.awsAccessKey || '';
+                document.getElementById('aws-secret-key').value = settings.awsSecretKey || '';
+                document.getElementById('aws-region').value = settings.awsRegion || '';
+                document.getElementById('openai-key').value = settings.openaiKey || '';
+            }
+        } catch (error) {
+            console.error('Error loading settings:', error);
+        }
+    }
+    
+    clearAllKeys() {
+        if (confirm('Are you sure you want to clear all API keys? This action cannot be undone.')) {
+            localStorage.removeItem('apiSettings');
+            
+            document.getElementById('aws-access-key').value = '';
+            document.getElementById('aws-secret-key').value = '';
+            document.getElementById('aws-region').value = '';
+            document.getElementById('openai-key').value = '';
+            
+            this.updateStatus();
+            this.showNotification('All API keys cleared successfully.', 'success');
+        }
+    }
+    
+    updateStatus() {
+        const settings = this.getSettings();
+        const hasAWS = settings.awsAccessKey && settings.awsSecretKey && settings.awsRegion;
+        const hasOpenAI = settings.openaiKey;
+        
+        if (hasAWS || hasOpenAI) {
+            this.statusIndicator.classList.add('configured');
+            
+            let statusText = 'Configured: ';
+            const apis = [];
+            if (hasAWS) apis.push('AWS Bedrock');
+            if (hasOpenAI) apis.push('OpenAI');
+            statusText += apis.join(', ');
+            
+            this.statusIndicator.querySelector('.status-text').textContent = statusText;
+        } else {
+            this.statusIndicator.classList.remove('configured');
+            this.statusIndicator.querySelector('.status-text').textContent = 'No API keys configured';
+        }
+    }
+    
+    getSettings() {
+        try {
+            const saved = localStorage.getItem('apiSettings');
+            return saved ? JSON.parse(saved) : {};
+        } catch (error) {
+            console.error('Error getting settings:', error);
+            return {};
+        }
+    }
+    
+    hasValidSettings() {
+        const settings = this.getSettings();
+        const hasAWS = settings.awsAccessKey && settings.awsSecretKey && settings.awsRegion;
+        const hasOpenAI = settings.openaiKey;
+        return hasAWS || hasOpenAI;
+    }
+    
+    showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.padding = '1rem 1.5rem';
+        notification.style.borderRadius = 'var(--radius-md)';
+        notification.style.boxShadow = 'var(--shadow-lg)';
+        notification.style.zIndex = '10001';
+        notification.style.fontWeight = '600';
+        notification.style.animation = 'slideInRight 0.3s ease';
+        
+        if (type === 'success') {
+            notification.style.background = 'var(--accent-color)';
+            notification.style.color = 'white';
+        } else {
+            notification.style.background = '#ef4444';
+            notification.style.color = 'white';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+}
+
+// ===================================
 // ResearchBot with AI Confidence Scoring
 // ===================================
 
 class ResearchBot {
-    constructor() {
+    constructor(apiSettings) {
+        this.apiSettings = apiSettings;
         this.form = document.querySelector('.research-form');
         this.resultsContainer = document.getElementById('research-results');
         this.loadingContainer = document.getElementById('research-loading');
@@ -550,19 +753,51 @@ class ResearchBot {
         
         if (!topic) return;
         
+        // Check if API keys are configured
+        if (!this.apiSettings.hasValidSettings()) {
+            const proceed = confirm(
+                'No API keys configured. The research will use mock data for demonstration.\n\n' +
+                'Would you like to configure your API keys now for real AI-powered research?'
+            );
+            
+            if (proceed) {
+                this.apiSettings.openModal();
+                return;
+            }
+        }
+        
         // Show loading, hide results
         this.showLoading();
         
         try {
-            // Simulate AI research with delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Check if we have real API keys
+            const settings = this.apiSettings.getSettings();
+            const hasRealAPI = (settings.awsAccessKey && settings.awsSecretKey && settings.awsRegion) || settings.openaiKey;
             
-            // Generate research results
-            const results = this.generateResearch(topic);
-            this.currentResults = { topic, results };
-            
-            // Display results
-            this.displayResults(results);
+            if (hasRealAPI) {
+                // In a real implementation, this would call the actual API
+                // For now, we'll still use mock data but show a message
+                console.log('Would make API call with:', settings);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generate research results (using mock data for now)
+                // TODO: Replace with actual API call
+                const results = this.generateResearch(topic);
+                this.currentResults = { topic, results };
+                
+                // Display results
+                this.displayResults(results);
+            } else {
+                // Use mock data
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generate research results
+                const results = this.generateResearch(topic);
+                this.currentResults = { topic, results };
+                
+                // Display results
+                this.displayResults(results);
+            }
         } catch (error) {
             console.error('Research error:', error);
             alert('An error occurred while researching. Please try again.');
@@ -803,8 +1038,9 @@ class ResearchBot {
 // ===================================
 
 class BookGenerator {
-    constructor(researchBot) {
+    constructor(researchBot, apiSettings) {
         this.researchBot = researchBot;
+        this.apiSettings = apiSettings;
         this.bookSection = document.getElementById('book-generator');
         this.bookForm = this.bookSection?.querySelector('.book-form');
         this.bookPreview = document.getElementById('book-preview');
@@ -1207,8 +1443,9 @@ class App {
         
         // Initialize all modules
         new Navigation();
-        const researchBot = new ResearchBot();
-        new BookGenerator(researchBot);
+        const apiSettings = new APISettings();
+        const researchBot = new ResearchBot(apiSettings);
+        new BookGenerator(researchBot, apiSettings);
         new AnimationController();
         new FormHandler();
         new PerformanceOptimizer();
