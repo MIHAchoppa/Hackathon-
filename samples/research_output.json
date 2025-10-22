@@ -1,0 +1,50 @@
+{
+  "topic": "Electric Vehicles",
+  "results": [
+    {
+      "section": "Overview",
+      "details": "Electric vehicles (EVs) are battery-powered automobiles that use electric motors instead of internal combustion engines, significantly reducing carbon emissions and dependence on fossil fuels. They represent a fundamental shift in transportation technology, combining environmental sustainability with advanced digital features and autonomous driving capabilities.",
+      "confidence": 94,
+      "source": "bedrock"
+    },
+    {
+      "section": "Key Statistics",
+      "details": "Global EV sales reached 14 million units in 2023, representing 18% of total vehicle sales worldwide. The market is projected to grow at a CAGR of 23.1% through 2030, with battery costs declining 89% since 2010 to an average of $132 per kWh. China leads with 60% of global EV sales, followed by Europe at 25% and the US at 10%.",
+      "confidence": 91,
+      "source": "bedrock"
+    },
+    {
+      "section": "Advantages",
+      "details": "Electric vehicles offer numerous benefits including lower operating costs with 60% reduction in fuel expenses, zero direct emissions improving urban air quality, minimal maintenance requirements due to fewer moving parts (no oil changes, reduced brake wear), instant torque providing superior acceleration, and quiet operation enhancing driving comfort. Additionally, EVs can serve as mobile energy storage units for grid stabilization.",
+      "confidence": 89,
+      "source": "bedrock"
+    },
+    {
+      "section": "Challenges",
+      "details": "Key challenges include limited driving range (average 250-350 miles per charge vs 400+ for gasoline vehicles), higher upfront purchase costs ($10,000-15,000 premium over comparable ICE vehicles), charging infrastructure gaps particularly in rural areas, longer refueling times (30-45 minutes for fast charging), battery degradation concerns (10-20% capacity loss over 8-10 years), and supply chain constraints for critical minerals like lithium and cobalt.",
+      "confidence": 87,
+      "source": "bedrock"
+    },
+    {
+      "section": "Future Outlook",
+      "details": "Electric vehicles are projected to dominate new vehicle sales by 2035, with many countries implementing ICE vehicle bans between 2030-2040. Technological advances in solid-state batteries promise 500+ mile ranges and 10-minute charging by 2027. Autonomous driving features will increasingly integrate with EV platforms. The global charging network is expected to expand 10x by 2030, with Vehicle-to-Grid (V2G) technology enabling EVs to support renewable energy grid integration.",
+      "confidence": 85,
+      "source": "bedrock"
+    },
+    {
+      "section": "Recommendations",
+      "details": "For potential buyers: evaluate total cost of ownership including incentives (up to $7,500 federal tax credit in US), assess charging options for your location (home, workplace, public infrastructure), test drive multiple models focusing on range that exceeds daily needs by 30%, review warranty coverage for batteries (typically 8 years/100,000 miles), and consider used EVs for better value with verified battery health reports. For businesses: develop EV fleet transition plans, install workplace charging, and explore fleet management software.",
+      "confidence": 88,
+      "source": "bedrock"
+    }
+  ],
+  "timestamp": "2025-01-15T14:32:18.456Z",
+  "s3_key": "research/demo_user/20250115_143218_electric-vehicles.json",
+  "total_sections": 6,
+  "average_confidence": 89.0,
+  "metadata": {
+    "generation_time_ms": 8450,
+    "models_used": ["anthropic.claude-v2"],
+    "retry_count": 0
+  }
+}

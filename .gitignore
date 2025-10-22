@@ -6,6 +6,20 @@ yarn-error.log*
 package-lock.json
 yarn.lock
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+
 # Environment variables
 .env
 .env.local
@@ -27,6 +41,11 @@ build/
 *.min.js
 *.min.css
 
+# Lambda deployment packages
+backend/lambda/package/
+backend/lambda/package-*/
+*.zip
+
 # Logs
 logs/
 *.log
@@ -34,6 +53,8 @@ logs/
 # Testing
 coverage/
 .nyc_output/
+.coverage
+htmlcov/
 
 # Temporary files
 tmp/
@@ -47,3 +68,14 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+
+# AWS
+.aws-sam/
+samconfig.toml
+
+# Response files from testing
+response.json
+lambda-trust-policy.json
+lambda-permissions-policy.json
+bucket-policy.json
+s3-lifecycle-policy.json
