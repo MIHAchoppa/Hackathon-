@@ -518,6 +518,205 @@ class AccessibilityEnhancer {
 }
 
 // ===================================
+// Voice Input Handler with Groq Whisper API
+// ===================================
+
+class VoiceInputHandler {
+    constructor() {
+        this.voiceButton = document.getElementById('voice-input-btn');
+        this.topicInput = document.getElementById('research-topic');
+        this.voiceStatus = document.getElementById('voice-status');
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.isRecording = false;
+        
+        // Groq API configuration (user should set their own API key)
+        this.groqApiKey = this.getGroqApiKey();
+        this.groqApiUrl = 'https://api.groq.com/openai/v1/audio/transcriptions';
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.voiceButton) return;
+        
+        this.voiceButton.addEventListener('click', () => this.toggleRecording());
+    }
+    
+    getGroqApiKey() {
+        // Check for API key in localStorage or prompt user
+        let apiKey = localStorage.getItem('groq_api_key');
+        
+        if (!apiKey || apiKey === 'your_groq_api_key_here') {
+            // Show info to user about API key
+            console.log('ℹ️ To use voice input, set your Groq API key: localStorage.setItem("groq_api_key", "your_key")');
+            return null;
+        }
+        
+        return apiKey;
+    }
+    
+    async toggleRecording() {
+        if (this.isRecording) {
+            this.stopRecording();
+        } else {
+            await this.startRecording();
+        }
+    }
+    
+    async startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            this.mediaRecorder = new MediaRecorder(stream);
+            this.audioChunks = [];
+            
+            this.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    this.audioChunks.push(event.data);
+                }
+            };
+            
+            this.mediaRecorder.onstop = () => {
+                this.processAudio();
+                stream.getTracks().forEach(track => track.stop());
+            };
+            
+            this.mediaRecorder.start();
+            this.isRecording = true;
+            
+            // Update UI
+            this.voiceButton.classList.add('recording');
+            this.voiceButton.querySelector('.voice-icon').textContent = '⏹️';
+            this.voiceStatus.style.display = 'block';
+            
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            alert('Unable to access microphone. Please check permissions.');
+        }
+    }
+    
+    stopRecording() {
+        if (this.mediaRecorder && this.isRecording) {
+            this.mediaRecorder.stop();
+            this.isRecording = false;
+            
+            // Update UI
+            this.voiceButton.classList.remove('recording');
+            this.voiceButton.querySelector('.voice-icon').textContent = '🎤';
+        }
+    }
+    
+    async processAudio() {
+        // Show processing status
+        this.voiceStatus.querySelector('.status-text').textContent = 'Processing audio...';
+        
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        
+        if (!this.groqApiKey) {
+            this.showApiKeyPrompt();
+            this.voiceStatus.style.display = 'none';
+            return;
+        }
+        
+        try {
+            const transcription = await this.transcribeAudio(audioBlob);
+            
+            if (transcription) {
+                this.topicInput.value = transcription;
+                this.voiceStatus.querySelector('.status-text').textContent = '✓ Transcription complete!';
+                
+                // Hide status after 2 seconds
+                setTimeout(() => {
+                    this.voiceStatus.style.display = 'none';
+                    this.voiceStatus.querySelector('.status-text').textContent = 'Listening...';
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Transcription error:', error);
+            this.voiceStatus.querySelector('.status-text').textContent = '✗ Transcription failed';
+            
+            setTimeout(() => {
+                this.voiceStatus.style.display = 'none';
+                this.voiceStatus.querySelector('.status-text').textContent = 'Listening...';
+            }, 2000);
+        }
+    }
+    
+    async transcribeAudio(audioBlob) {
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'audio.webm');
+        formData.append('model', 'whisper-large-v3');
+        formData.append('language', 'en');
+        formData.append('response_format', 'json');
+        
+        try {
+            const response = await fetch(this.groqApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.groqApiKey}`
+                },
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status} ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            return data.text;
+            
+        } catch (error) {
+            console.error('Groq API error:', error);
+            
+            // Fallback: Use browser's built-in speech recognition if available
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                return this.fallbackSpeechRecognition();
+            }
+            
+            throw error;
+        }
+    }
+    
+    fallbackSpeechRecognition() {
+        return new Promise((resolve, reject) => {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                resolve(transcript);
+            };
+            
+            recognition.onerror = (event) => {
+                reject(new Error(`Speech recognition error: ${event.error}`));
+            };
+            
+            recognition.start();
+        });
+    }
+    
+    showApiKeyPrompt() {
+        const message = `
+To use voice input with Groq's Whisper model, you need to set your API key.
+
+Get your free API key at: https://console.groq.com/keys
+
+Then run this in the browser console:
+localStorage.setItem('groq_api_key', 'your_key_here')
+
+Alternatively, the browser's built-in speech recognition will be used if available.
+        `.trim();
+        
+        alert(message);
+    }
+}
+
+// ===================================
 // ResearchBot with AI Confidence Scoring
 // ===================================
 
@@ -528,6 +727,7 @@ class ResearchBot {
         this.loadingContainer = document.getElementById('research-loading');
         this.tableBody = document.getElementById('research-table-body');
         this.currentResults = null;
+        this.kmInput = document.getElementById('custom-km-input');
         
         this.init();
     }
@@ -547,6 +747,7 @@ class ResearchBot {
         
         const topicInput = document.getElementById('research-topic');
         const topic = topicInput.value.trim();
+        const kmValue = this.kmInput.value.trim();
         
         if (!topic) return;
         
@@ -558,8 +759,8 @@ class ResearchBot {
             await new Promise(resolve => setTimeout(resolve, 2000));
             
             // Generate research results
-            const results = this.generateResearch(topic);
-            this.currentResults = { topic, results };
+            const results = this.generateResearch(topic, kmValue);
+            this.currentResults = { topic, results, kmValue };
             
             // Display results
             this.displayResults(results);
@@ -571,19 +772,19 @@ class ResearchBot {
         }
     }
     
-    generateResearch(topic) {
+    generateResearch(topic, kmValue = '') {
         // Mock AI research generator with confidence scores
         // In production, this would call AWS Bedrock API
         
         const insights = [
             {
                 section: 'Overview',
-                details: this.generateOverview(topic),
+                details: this.generateOverview(topic, kmValue),
                 confidence: this.randomConfidence(85, 98)
             },
             {
                 section: 'Key Statistics',
-                details: this.generateStatistics(topic),
+                details: this.generateStatistics(topic, kmValue),
                 confidence: this.randomConfidence(75, 95)
             },
             {
@@ -608,10 +809,19 @@ class ResearchBot {
             }
         ];
         
+        // Add distance-specific section if km value is provided
+        if (kmValue && parseFloat(kmValue) > 0) {
+            insights.splice(2, 0, {
+                section: 'Distance Analysis',
+                details: this.generateDistanceAnalysis(topic, kmValue),
+                confidence: this.randomConfidence(80, 95)
+            });
+        }
+        
         return insights;
     }
     
-    generateOverview(topic) {
+    generateOverview(topic, kmValue = '') {
         const overviews = {
             'electric cars': 'Electric vehicles (EVs) are battery-powered automobiles that use electric motors instead of internal combustion engines, significantly reducing carbon emissions and dependence on fossil fuels.',
             'ai technology': 'Artificial Intelligence technology encompasses machine learning, neural networks, and deep learning systems that enable computers to perform tasks requiring human-like intelligence.',
@@ -620,10 +830,17 @@ class ResearchBot {
         };
         
         const key = topic.toLowerCase();
-        return overviews[key] || overviews['default'];
+        let overview = overviews[key] || overviews['default'];
+        
+        // Add km context if provided
+        if (kmValue && parseFloat(kmValue) > 0) {
+            overview += ` This analysis considers a range of ${kmValue} kilometers.`;
+        }
+        
+        return overview;
     }
     
-    generateStatistics(topic) {
+    generateStatistics(topic, kmValue = '') {
         const stats = {
             'electric cars': 'Global EV sales reached 14 million units in 2023, representing 18% of total vehicle sales, with projections indicating 30% market share by 2030.',
             'ai technology': 'The AI market is valued at $196 billion in 2023 and expected to grow at a CAGR of 37% through 2030, with enterprise adoption increasing by 270% over the past four years.',
@@ -632,7 +849,29 @@ class ResearchBot {
         };
         
         const key = topic.toLowerCase();
-        return stats[key] || stats['default'];
+        let statText = stats[key] || stats['default'];
+        
+        // Add km-specific statistics if provided
+        if (kmValue && parseFloat(kmValue) > 0) {
+            if (key === 'electric cars') {
+                statText += ` At ${kmValue}km range, modern EVs can serve 95% of daily driving needs without recharging.`;
+            }
+        }
+        
+        return statText;
+    }
+    
+    generateDistanceAnalysis(topic, kmValue) {
+        const km = parseFloat(kmValue);
+        const key = topic.toLowerCase();
+        
+        const analyses = {
+            'electric cars': `For electric vehicles traveling ${km} kilometers: Most modern EVs have ranges between 300-600km per charge. A ${km}km journey would require ${km > 400 ? 'one or more charging stops' : 'no charging stops for most EVs'}. Energy consumption at highway speeds averages 20kWh per 100km, meaning approximately ${(km * 0.2).toFixed(1)}kWh would be needed for this distance.`,
+            'renewable energy': `At a ${km}km radius, renewable energy infrastructure considerations: Solar farms typically require 4-5 hectares per MW, wind farms need specific spacing requirements. Within ${km}km, efficient grid connectivity and energy distribution systems are crucial for optimal renewable energy deployment.`,
+            'default': `Considering a ${km}km parameter: This distance represents ${km < 50 ? 'a short-range' : km < 200 ? 'a medium-range' : 'a long-range'} context for ${topic}. Infrastructure, logistics, and resource planning would need to account for this ${km}km coverage area.`
+        };
+        
+        return analyses[key] || analyses['default'];
     }
     
     generateAdvantages(topic) {
@@ -1208,6 +1447,7 @@ class App {
         // Initialize all modules
         new Navigation();
         const researchBot = new ResearchBot();
+        new VoiceInputHandler();
         new BookGenerator(researchBot);
         new AnimationController();
         new FormHandler();

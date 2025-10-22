@@ -24,9 +24,12 @@ This repository contains the codebase for an innovative hackathon project. Our g
 ## ✨ Features
 
 - **AI ResearchBot**: Intelligent research assistant with confidence scoring on any topic
+- **Voice Input Integration**: Use Groq's Whisper model for voice-to-text research topics
+- **Custom Distance/Range Input**: Add kilometer-based context to your research with distance analysis
 - **Probability-Based Insights**: Each research point includes confidence scores (0-100%)
-- **Structured Research**: Organized insights covering overview, statistics, pros/cons, and recommendations
+- **Structured Research**: Organized insights covering overview, statistics, distance analysis, pros/cons, and recommendations
 - **Export Functionality**: Download research results as JSON or CSV
+- **Book Generation**: Create formatted books from your research with multiple styles and structures
 - **Innovative Solution**: Addresses specific problem domain with modern technology
 - **Scalable Architecture**: Built with best practices and scalability in mind
 - **Open Source**: Community-driven development with transparent processes
@@ -80,12 +83,29 @@ The ResearchBot feature allows you to generate comprehensive research insights w
 
 1. **Navigate to the Research section** on the homepage
 2. **Enter a topic** in the input field (e.g., "Electric Cars", "AI Technology", "Renewable Energy")
-3. **Click the "Research" button** to generate insights
-4. **View results** organized by sections with confidence scores:
+   - **OR use voice input** by clicking the 🎤 microphone button to speak your topic
+3. **Optionally add distance/range context** in the km input field (e.g., 500 for 500 kilometers)
+   - This adds a "Distance Analysis" section to your results with km-specific insights
+4. **Click the "Research" button** to generate insights
+5. **View results** organized by sections with confidence scores:
    - 🟢 Green badges: High confidence (90%+)
    - 🟡 Yellow badges: Medium confidence (70-89%)
    - 🔴 Red badges: Low confidence (<70%)
-5. **Export your research** using the JSON or CSV export buttons
+6. **Export your research** using the JSON or CSV export buttons
+
+### Voice Input with Groq Whisper
+
+To enable voice-to-text transcription:
+
+1. **Get a free Groq API key** at [https://console.groq.com/keys](https://console.groq.com/keys)
+2. **Set your API key** in the browser console:
+   ```javascript
+   localStorage.setItem('groq_api_key', 'your_groq_api_key_here')
+   ```
+3. **Click the microphone button** and speak your research topic
+4. **The text will appear** in the research input field automatically
+
+**Note**: If a Groq API key is not configured, the system will fall back to the browser's built-in speech recognition (if available).
 
 ### Development
 

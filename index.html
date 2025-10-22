@@ -76,9 +76,33 @@
                             aria-label="Research topic"
                             required
                         >
+                        <button type="button" class="btn btn-voice" id="voice-input-btn" aria-label="Use voice input" title="Speak your research topic">
+                            <span class="voice-icon">🎤</span>
+                        </button>
                         <button type="submit" class="btn btn-primary">Research</button>
                     </div>
+                    <div class="additional-inputs">
+                        <div class="input-wrapper">
+                            <label for="custom-km-input">Distance/Range (km) - Optional</label>
+                            <input 
+                                type="number" 
+                                id="custom-km-input" 
+                                name="km" 
+                                placeholder="Enter kilometers (e.g., 100, 500)"
+                                aria-label="Distance in kilometers"
+                                min="0"
+                                step="0.1"
+                            >
+                            <small class="input-help">Add distance/range context to your research</small>
+                        </div>
+                    </div>
                 </form>
+                <div class="voice-status" id="voice-status" style="display: none;">
+                    <div class="voice-indicator">
+                        <span class="recording-dot"></span>
+                        <span class="status-text">Listening...</span>
+                    </div>
+                </div>
             </div>
 
             <div class="research-results" id="research-results" style="display: none;">

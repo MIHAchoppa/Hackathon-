@@ -395,6 +395,125 @@ section {
     white-space: nowrap;
 }
 
+.btn-voice {
+    padding: var(--spacing-sm);
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+}
+
+.btn-voice:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+}
+
+.btn-voice.recording {
+    animation: pulse 1.5s ease-in-out infinite;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.voice-icon {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.additional-inputs {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.input-wrapper label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+}
+
+.input-wrapper input {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast);
+    color: var(--text-primary);
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.input-help {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.voice-status {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    animation: fadeIn 0.3s ease;
+}
+
+.voice-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    justify-content: center;
+}
+
+.recording-dot {
+    width: 12px;
+    height: 12px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+
+.status-text {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
 .research-results {
     background: var(--white);
     border-radius: var(--radius-lg);
@@ -593,7 +712,16 @@ section {
 /* Responsive Design for Research Section */
 @media (max-width: 768px) {
     .research-input-group {
-        flex-direction: column;
+        flex-wrap: wrap;
+    }
+    
+    .research-input-group input {
+        flex: 1 1 100%;
+        min-width: 200px;
+    }
+    
+    .additional-inputs {
+        padding: var(--spacing-sm);
     }
     
     .results-header {
