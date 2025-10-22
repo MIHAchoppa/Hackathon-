@@ -832,6 +832,18 @@ class BookGenerator {
         document.getElementById('download-html')?.addEventListener('click', () => this.exportHTML());
         document.getElementById('download-pdf')?.addEventListener('click', () => this.exportPDF());
         document.getElementById('download-markdown')?.addEventListener('click', () => this.exportMarkdown());
+        
+        // Create audiobook button
+        document.getElementById('create-audiobook')?.addEventListener('click', () => this.openAudiobookGenerator());
+    }
+    
+    openAudiobookGenerator() {
+        // Scroll to audiobook section
+        const audiobookSection = document.getElementById('audiobook-generator');
+        if (audiobookSection) {
+            audiobookSection.style.display = 'block';
+            audiobookSection.scrollIntoView({ behavior: 'smooth' });
+        }
     }
     
     openBookGenerator() {
@@ -1185,6 +1197,250 @@ class BookGenerator {
 }
 
 // ===================================
+// Audiobook Generator with TTS
+// ===================================
+
+class AudiobookGenerator {
+    constructor(bookGenerator) {
+        this.bookGenerator = bookGenerator;
+        this.apiBaseUrl = 'http://localhost:3000/api';
+        this.audiobookSection = document.getElementById('audiobook-generator');
+        this.conversionProgress = document.getElementById('conversion-progress');
+        this.conversionResults = document.getElementById('conversion-results');
+        this.progressBar = document.getElementById('audiobook-progress-bar');
+        this.progressText = document.getElementById('audiobook-progress-text');
+        this.resultsContainer = document.getElementById('audiobook-results-container');
+        this.conversionLog = document.getElementById('conversion-log');
+        this.availableVoices = [];
+        
+        this.init();
+    }
+    
+    init() {
+        // Load available voices
+        this.loadVoices();
+        
+        // Generate audiobook button
+        document.getElementById('generate-audiobook')?.addEventListener('click', () => this.generateAudiobook());
+        
+        // Close audiobook section
+        document.getElementById('close-audiobook')?.addEventListener('click', () => this.closeAudiobook());
+        
+        // Download all button
+        document.getElementById('download-all-audio')?.addEventListener('click', () => this.downloadAll());
+    }
+    
+    async loadVoices() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/tts/voices`);
+            const data = await response.json();
+            this.availableVoices = data.voices;
+            
+            // Populate voice selector
+            const voiceSelect = document.getElementById('audiobook-voice');
+            if (voiceSelect) {
+                voiceSelect.innerHTML = '<option value="">Select a voice...</option>';
+                this.availableVoices.forEach(voice => {
+                    const option = document.createElement('option');
+                    option.value = voice.id;
+                    option.textContent = `${voice.name} (${voice.gender}, ${voice.language})`;
+                    voiceSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading voices:', error);
+        }
+    }
+    
+    async generateAudiobook() {
+        // Validate that book is generated
+        if (!this.bookGenerator.currentResults || this.bookGenerator.selectedSections.length === 0) {
+            alert('Please generate a book first before creating an audiobook.');
+            return;
+        }
+        
+        const voice = document.getElementById('audiobook-voice')?.value;
+        const includeConfidence = document.getElementById('include-confidence')?.checked || false;
+        const includeTOC = document.getElementById('include-toc')?.checked || true;
+        
+        if (!voice) {
+            alert('Please select a voice for the audiobook.');
+            return;
+        }
+        
+        // Get book details
+        const bookTitle = document.getElementById('book-title')?.value || 'Untitled Book';
+        const author = document.getElementById('book-author')?.value || 'Unknown Author';
+        const chapters = this.bookGenerator.selectedSections;
+        
+        // Show audiobook section and progress
+        this.audiobookSection.style.display = 'block';
+        this.conversionProgress.style.display = 'block';
+        this.conversionResults.style.display = 'none';
+        
+        // Scroll to audiobook section
+        this.audiobookSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Reset progress
+        this.updateProgress(0, 'Starting audiobook conversion...');
+        this.clearLog();
+        
+        try {
+            this.log('info', `Starting audiobook generation for "${bookTitle}"`);
+            this.log('info', `Voice: ${voice}`);
+            this.log('info', `Total chapters: ${chapters.length}`);
+            
+            // Call backend API
+            const response = await fetch(`${this.apiBaseUrl}/tts/convert-book`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bookTitle,
+                    author,
+                    chapters,
+                    voice,
+                    includeConfidence,
+                    includeTOC
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            
+            // Update progress to 100%
+            this.updateProgress(100, 'Conversion complete!');
+            
+            // Display results
+            this.displayResults(result);
+            
+            // Log completion
+            this.log('success', `✓ Audiobook generation completed!`);
+            this.log('info', `Success rate: ${result.successRate}`);
+            
+            if (result.errors.length > 0) {
+                result.errors.forEach(error => {
+                    this.log('error', `Chapter ${error.chapter} failed: ${error.error}`);
+                });
+            }
+            
+        } catch (error) {
+            console.error('Audiobook generation error:', error);
+            this.log('error', `Failed to generate audiobook: ${error.message}`);
+            alert(`Failed to generate audiobook: ${error.message}\n\nMake sure the backend server is running on port 3000.`);
+            this.updateProgress(0, 'Conversion failed');
+        }
+    }
+    
+    updateProgress(percent, message) {
+        if (this.progressBar) {
+            this.progressBar.style.width = `${percent}%`;
+        }
+        if (this.progressText) {
+            this.progressText.textContent = message;
+        }
+    }
+    
+    displayResults(result) {
+        this.conversionProgress.style.display = 'none';
+        this.conversionResults.style.display = 'block';
+        
+        let html = '<h3>Audiobook Generated Successfully!</h3>';
+        
+        // Table of contents
+        if (result.tableOfContents) {
+            html += `
+                <div class="audio-result-item toc">
+                    <div class="audio-item-header">
+                        <span class="audio-item-title">📖 Table of Contents</span>
+                        <span class="audio-item-status success">✓</span>
+                    </div>
+                    <div class="audio-item-details">
+                        <a href="${result.tableOfContents.url}" target="_blank" class="btn btn-sm btn-secondary">
+                            Download TOC
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Chapters
+        html += '<div class="audio-chapters-list">';
+        result.chapters.forEach(chapter => {
+            const sizeKB = (chapter.size / 1024).toFixed(2);
+            html += `
+                <div class="audio-result-item">
+                    <div class="audio-item-header">
+                        <span class="audio-item-title">Chapter ${chapter.number}: ${chapter.section}</span>
+                        <span class="audio-item-status success">✓</span>
+                    </div>
+                    <div class="audio-item-details">
+                        <span class="audio-item-size">${sizeKB} KB</span>
+                        ${chapter.s3 ? `<a href="${chapter.s3.url}" target="_blank" class="btn btn-sm btn-secondary">Download</a>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        // Summary
+        html += `
+            <div class="audiobook-summary">
+                <h4>Summary</h4>
+                <ul>
+                    <li><strong>Total Chapters:</strong> ${result.totalChapters}</li>
+                    <li><strong>Successfully Generated:</strong> ${result.chapters.length}</li>
+                    <li><strong>Errors:</strong> ${result.errors.length}</li>
+                    <li><strong>Success Rate:</strong> ${result.successRate}</li>
+                </ul>
+            </div>
+        `;
+        
+        this.resultsContainer.innerHTML = html;
+    }
+    
+    clearLog() {
+        if (this.conversionLog) {
+            this.conversionLog.innerHTML = '';
+        }
+    }
+    
+    log(type, message) {
+        if (!this.conversionLog) return;
+        
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry log-${type}`;
+        
+        const timestamp = new Date().toLocaleTimeString();
+        logEntry.innerHTML = `
+            <span class="log-time">[${timestamp}]</span>
+            <span class="log-message">${message}</span>
+        `;
+        
+        this.conversionLog.appendChild(logEntry);
+        this.conversionLog.scrollTop = this.conversionLog.scrollHeight;
+    }
+    
+    closeAudiobook() {
+        this.audiobookSection.style.display = 'none';
+    }
+    
+    downloadAll() {
+        // Get all download links
+        const links = this.resultsContainer.querySelectorAll('a[href]');
+        links.forEach((link, index) => {
+            setTimeout(() => {
+                link.click();
+            }, index * 1000); // Stagger downloads by 1 second
+        });
+    }
+}
+
+// ===================================
 // Initialize Application
 // ===================================
 
@@ -1208,7 +1464,8 @@ class App {
         // Initialize all modules
         new Navigation();
         const researchBot = new ResearchBot();
-        new BookGenerator(researchBot);
+        const bookGenerator = new BookGenerator(researchBot);
+        new AudiobookGenerator(bookGenerator);
         new AnimationController();
         new FormHandler();
         new PerformanceOptimizer();
