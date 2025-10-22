@@ -112,9 +112,20 @@ curl -X POST http://localhost:3000/api/v1/items \
 
 - **Helmet.js**: Sets various HTTP headers for security
 - **CORS**: Configurable Cross-Origin Resource Sharing
-- **Rate Limiting**: Prevents abuse with configurable limits
-- **Input Validation**: Validates all incoming requests
-- **Error Handling**: Secure error responses without leaking sensitive data
+  - Development: Allows all origins when `CORS_ORIGIN=*`
+  - Production: Restrict to specific origins (e.g., `CORS_ORIGIN=https://example.com,https://app.example.com`)
+- **Rate Limiting**: Prevents abuse with configurable limits (100 requests per 15 minutes by default)
+- **Input Validation**: Validates all incoming requests with express-validator
+- **Error Handling**: Secure error responses without leaking sensitive data in production
+- **Environment Variables**: Sensitive configuration kept in environment variables
+
+### 🛡️ Security Best Practices for Production
+
+1. **CORS Configuration**: Always set specific allowed origins instead of using `*`
+2. **Environment Variables**: Never commit `.env` files with sensitive data
+3. **Rate Limiting**: Adjust rate limits based on your needs
+4. **HTTPS**: Always use HTTPS in production (configure at reverse proxy level)
+5. **Updates**: Regularly update dependencies to patch security vulnerabilities
 
 ## 🌟 Best Practices
 
