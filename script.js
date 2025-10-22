@@ -518,6 +518,270 @@ class AccessibilityEnhancer {
 }
 
 // ===================================
+// ResearchBot with AI Confidence Scoring
+// ===================================
+
+class ResearchBot {
+    constructor() {
+        this.form = document.querySelector('.research-form');
+        this.resultsContainer = document.getElementById('research-results');
+        this.loadingContainer = document.getElementById('research-loading');
+        this.tableBody = document.getElementById('research-table-body');
+        this.currentResults = null;
+        
+        this.init();
+    }
+    
+    init() {
+        if (!this.form) return;
+        
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        
+        // Export buttons
+        document.getElementById('export-json')?.addEventListener('click', () => this.exportJSON());
+        document.getElementById('export-csv')?.addEventListener('click', () => this.exportCSV());
+    }
+    
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        const topicInput = document.getElementById('research-topic');
+        const topic = topicInput.value.trim();
+        
+        if (!topic) return;
+        
+        // Show loading, hide results
+        this.showLoading();
+        
+        try {
+            // Simulate AI research with delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Generate research results
+            const results = this.generateResearch(topic);
+            this.currentResults = { topic, results };
+            
+            // Display results
+            this.displayResults(results);
+        } catch (error) {
+            console.error('Research error:', error);
+            alert('An error occurred while researching. Please try again.');
+        } finally {
+            this.hideLoading();
+        }
+    }
+    
+    generateResearch(topic) {
+        // Mock AI research generator with confidence scores
+        // In production, this would call AWS Bedrock API
+        
+        const insights = [
+            {
+                section: 'Overview',
+                details: this.generateOverview(topic),
+                confidence: this.randomConfidence(85, 98)
+            },
+            {
+                section: 'Key Statistics',
+                details: this.generateStatistics(topic),
+                confidence: this.randomConfidence(75, 95)
+            },
+            {
+                section: 'Advantages',
+                details: this.generateAdvantages(topic),
+                confidence: this.randomConfidence(80, 95)
+            },
+            {
+                section: 'Challenges',
+                details: this.generateChallenges(topic),
+                confidence: this.randomConfidence(80, 92)
+            },
+            {
+                section: 'Future Outlook',
+                details: this.generateFutureOutlook(topic),
+                confidence: this.randomConfidence(70, 88)
+            },
+            {
+                section: 'Recommendations',
+                details: this.generateRecommendations(topic),
+                confidence: this.randomConfidence(75, 90)
+            }
+        ];
+        
+        return insights;
+    }
+    
+    generateOverview(topic) {
+        const overviews = {
+            'electric cars': 'Electric vehicles (EVs) are battery-powered automobiles that use electric motors instead of internal combustion engines, significantly reducing carbon emissions and dependence on fossil fuels.',
+            'ai technology': 'Artificial Intelligence technology encompasses machine learning, neural networks, and deep learning systems that enable computers to perform tasks requiring human-like intelligence.',
+            'renewable energy': 'Renewable energy refers to power generated from naturally replenishing sources such as solar, wind, hydroelectric, and geothermal, offering sustainable alternatives to fossil fuels.',
+            'default': `${topic} represents an important area of innovation and development, with significant implications for technology, society, and the economy.`
+        };
+        
+        const key = topic.toLowerCase();
+        return overviews[key] || overviews['default'];
+    }
+    
+    generateStatistics(topic) {
+        const stats = {
+            'electric cars': 'Global EV sales reached 14 million units in 2023, representing 18% of total vehicle sales, with projections indicating 30% market share by 2030.',
+            'ai technology': 'The AI market is valued at $196 billion in 2023 and expected to grow at a CAGR of 37% through 2030, with enterprise adoption increasing by 270% over the past four years.',
+            'renewable energy': 'Renewable energy accounted for 30% of global electricity generation in 2023, with solar and wind capacity growing by 45% annually.',
+            'default': `Recent studies show growing adoption and investment in ${topic}, with significant year-over-year growth trends indicating mainstream acceptance.`
+        };
+        
+        const key = topic.toLowerCase();
+        return stats[key] || stats['default'];
+    }
+    
+    generateAdvantages(topic) {
+        const advantages = {
+            'electric cars': 'Lower operating costs with reduced fuel and maintenance expenses, zero direct emissions improving air quality, quieter operation, and instant torque for better acceleration.',
+            'ai technology': 'Enhanced automation and efficiency, data-driven decision making, 24/7 availability, scalability, and ability to process vast amounts of information rapidly.',
+            'renewable energy': 'Zero greenhouse gas emissions during operation, reduced air pollution, energy independence, decreasing costs, and job creation in green sectors.',
+            'default': `${topic} offers improved efficiency, cost savings over time, environmental benefits, and enhanced user experience compared to traditional alternatives.`
+        };
+        
+        const key = topic.toLowerCase();
+        return advantages[key] || advantages['default'];
+    }
+    
+    generateChallenges(topic) {
+        const challenges = {
+            'electric cars': 'Limited driving range compared to gasoline vehicles, higher upfront purchase costs, charging infrastructure gaps, longer refueling times, and battery degradation concerns.',
+            'ai technology': 'High implementation costs, data privacy concerns, potential job displacement, bias in algorithms, lack of explainability, and significant computational requirements.',
+            'renewable energy': 'Intermittency and weather dependence, energy storage challenges, higher initial infrastructure costs, land use requirements, and grid integration complexity.',
+            'default': `${topic} faces challenges including adoption barriers, cost considerations, infrastructure requirements, regulatory hurdles, and resistance to change.`
+        };
+        
+        const key = topic.toLowerCase();
+        return challenges[key] || challenges['default'];
+    }
+    
+    generateFutureOutlook(topic) {
+        const outlooks = {
+            'electric cars': 'Projected to dominate new vehicle sales by 2035 with advances in battery technology, expanded charging networks, and supportive government policies driving adoption.',
+            'ai technology': 'Expected to become ubiquitous across industries, with generative AI, autonomous systems, and edge computing driving next wave of innovation and productivity gains.',
+            'renewable energy': 'Forecasted to provide 65% of global electricity by 2040, driven by cost reductions, storage innovations, and climate commitments from governments worldwide.',
+            'default': `${topic} is expected to see continued growth and evolution, with technological advances and changing market dynamics shaping its future trajectory.`
+        };
+        
+        const key = topic.toLowerCase();
+        return outlooks[key] || outlooks['default'];
+    }
+    
+    generateRecommendations(topic) {
+        const recommendations = {
+            'electric cars': 'Consider total cost of ownership including incentives, evaluate charging options for your location, test drive multiple models, and review warranty coverage for batteries.',
+            'ai technology': 'Start with clear use cases, invest in data quality and governance, provide employee training, implement ethical guidelines, and begin with pilot projects before scaling.',
+            'renewable energy': 'Conduct energy audits, explore available incentives and financing options, consider hybrid systems, plan for storage solutions, and engage qualified installers.',
+            'default': `When considering ${topic}, thoroughly research options, assess long-term costs and benefits, consult with experts, and start with smaller implementations before full-scale adoption.`
+        };
+        
+        const key = topic.toLowerCase();
+        return recommendations[key] || recommendations['default'];
+    }
+    
+    randomConfidence(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    displayResults(results) {
+        // Clear previous results
+        this.tableBody.innerHTML = '';
+        
+        // Populate table
+        results.forEach(item => {
+            const row = document.createElement('tr');
+            
+            const sectionCell = document.createElement('td');
+            sectionCell.innerHTML = `<strong>${item.section}</strong>`;
+            
+            const detailsCell = document.createElement('td');
+            detailsCell.textContent = item.details;
+            
+            const confidenceCell = document.createElement('td');
+            confidenceCell.innerHTML = this.createConfidenceDisplay(item.confidence);
+            
+            row.appendChild(sectionCell);
+            row.appendChild(detailsCell);
+            row.appendChild(confidenceCell);
+            
+            this.tableBody.appendChild(row);
+        });
+        
+        // Show results
+        this.resultsContainer.style.display = 'block';
+        
+        // Smooth scroll to results
+        this.resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    createConfidenceDisplay(confidence) {
+        const level = this.getConfidenceLevel(confidence);
+        
+        return `
+            <div class="confidence-cell">
+                <span class="confidence-badge ${level}">
+                    ${confidence}%
+                </span>
+                <div class="confidence-bar" style="width: 100px;">
+                    <div class="confidence-fill ${level}" style="width: ${confidence}%;"></div>
+                </div>
+            </div>
+        `;
+    }
+    
+    getConfidenceLevel(confidence) {
+        if (confidence >= 90) return 'high';
+        if (confidence >= 70) return 'medium';
+        return 'low';
+    }
+    
+    showLoading() {
+        this.resultsContainer.style.display = 'none';
+        this.loadingContainer.style.display = 'block';
+    }
+    
+    hideLoading() {
+        this.loadingContainer.style.display = 'none';
+    }
+    
+    exportJSON() {
+        if (!this.currentResults) return;
+        
+        const dataStr = JSON.stringify(this.currentResults, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `research-${this.currentResults.topic.replace(/\s+/g, '-').toLowerCase()}.json`;
+        link.click();
+    }
+    
+    exportCSV() {
+        if (!this.currentResults) return;
+        
+        // Create CSV content
+        let csv = 'Section,Details,Confidence (%)\n';
+        
+        this.currentResults.results.forEach(item => {
+            // Escape quotes and commas in details
+            const details = item.details.replace(/"/g, '""');
+            csv += `"${item.section}","${details}",${item.confidence}\n`;
+        });
+        
+        const dataBlob = new Blob([csv], { type: 'text/csv' });
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `research-${this.currentResults.topic.replace(/\s+/g, '-').toLowerCase()}.csv`;
+        link.click();
+    }
+}
+
+// ===================================
 // Initialize Application
 // ===================================
 
@@ -540,6 +804,7 @@ class App {
         
         // Initialize all modules
         new Navigation();
+        new ResearchBot();
         new AnimationController();
         new FormHandler();
         new PerformanceOptimizer();
