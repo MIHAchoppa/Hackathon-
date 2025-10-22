@@ -692,8 +692,16 @@ class ResearchBot {
         this.tableBody.innerHTML = '';
         
         // Populate table
-        results.forEach(item => {
+        results.forEach((item, index) => {
             const row = document.createElement('tr');
+            
+            const checkboxCell = document.createElement('td');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'section-checkbox';
+            checkbox.dataset.index = index;
+            checkbox.checked = false;
+            checkboxCell.appendChild(checkbox);
             
             const sectionCell = document.createElement('td');
             sectionCell.innerHTML = `<strong>${item.section}</strong>`;
@@ -704,11 +712,20 @@ class ResearchBot {
             const confidenceCell = document.createElement('td');
             confidenceCell.innerHTML = this.createConfidenceDisplay(item.confidence);
             
+            row.appendChild(checkboxCell);
             row.appendChild(sectionCell);
             row.appendChild(detailsCell);
             row.appendChild(confidenceCell);
             
             this.tableBody.appendChild(row);
+        });
+        
+        // Setup select all checkbox
+        const selectAllCheckbox = document.getElementById('select-all-sections');
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.section-checkbox');
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
         });
         
         // Show results
@@ -782,6 +799,392 @@ class ResearchBot {
 }
 
 // ===================================
+// Book Generator
+// ===================================
+
+class BookGenerator {
+    constructor(researchBot) {
+        this.researchBot = researchBot;
+        this.bookSection = document.getElementById('book-generator');
+        this.bookForm = this.bookSection?.querySelector('.book-form');
+        this.bookPreview = document.getElementById('book-preview');
+        this.bookContent = document.getElementById('book-content');
+        this.selectedSectionsList = document.getElementById('selected-sections-list');
+        this.selectedSections = [];
+        
+        this.init();
+    }
+    
+    init() {
+        // Create Book button from research results
+        document.getElementById('create-book')?.addEventListener('click', () => this.openBookGenerator());
+        
+        // Generate book button
+        document.getElementById('generate-book')?.addEventListener('click', () => this.generateBook());
+        
+        // Cancel button
+        document.getElementById('cancel-book')?.addEventListener('click', () => this.closeBookGenerator());
+        
+        // Edit button
+        document.getElementById('edit-book')?.addEventListener('click', () => this.showForm());
+        
+        // Export buttons
+        document.getElementById('download-html')?.addEventListener('click', () => this.exportHTML());
+        document.getElementById('download-pdf')?.addEventListener('click', () => this.exportPDF());
+        document.getElementById('download-markdown')?.addEventListener('click', () => this.exportMarkdown());
+    }
+    
+    openBookGenerator() {
+        // Get selected sections from research results
+        const checkboxes = document.querySelectorAll('.section-checkbox:checked');
+        
+        if (checkboxes.length === 0) {
+            alert('Please select at least one section to include in your book.');
+            return;
+        }
+        
+        // Get the selected sections data
+        this.selectedSections = [];
+        checkboxes.forEach(checkbox => {
+            const index = parseInt(checkbox.dataset.index);
+            if (this.researchBot.currentResults) {
+                this.selectedSections.push(this.researchBot.currentResults.results[index]);
+            }
+        });
+        
+        // Display selected sections
+        this.displaySelectedSections();
+        
+        // Pre-fill book title with research topic
+        if (this.researchBot.currentResults) {
+            document.getElementById('book-title').value = 
+                `Understanding ${this.researchBot.currentResults.topic}`;
+        }
+        
+        // Show book generator section
+        this.bookSection.style.display = 'block';
+        this.bookPreview.style.display = 'none';
+        this.bookForm.style.display = 'block';
+        
+        // Scroll to book generator
+        this.bookSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    closeBookGenerator() {
+        this.bookSection.style.display = 'none';
+        this.selectedSections = [];
+    }
+    
+    displaySelectedSections() {
+        this.selectedSectionsList.innerHTML = '';
+        
+        this.selectedSections.forEach((section, index) => {
+            const tag = document.createElement('div');
+            tag.className = 'section-tag';
+            tag.innerHTML = `
+                <span>${section.section}</span>
+                <button class="remove-tag" data-index="${index}" title="Remove">×</button>
+            `;
+            
+            tag.querySelector('.remove-tag').addEventListener('click', (e) => {
+                this.removeSection(parseInt(e.target.dataset.index));
+            });
+            
+            this.selectedSectionsList.appendChild(tag);
+        });
+    }
+    
+    removeSection(index) {
+        this.selectedSections.splice(index, 1);
+        this.displaySelectedSections();
+        
+        if (this.selectedSections.length === 0) {
+            alert('You must have at least one section selected.');
+            this.closeBookGenerator();
+        }
+    }
+    
+    generateBook() {
+        const title = document.getElementById('book-title').value.trim();
+        const author = document.getElementById('book-author').value.trim();
+        const style = document.getElementById('book-style').value;
+        const structure = document.getElementById('book-structure').value;
+        
+        if (!title || !author || !style || !structure) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+        
+        // Generate book content based on style and structure
+        const bookHTML = this.createBookContent(this.escapeHtml(title), this.escapeHtml(author), style, structure);
+        
+        // Display preview
+        this.bookContent.innerHTML = bookHTML;
+        this.bookForm.style.display = 'none';
+        this.bookPreview.style.display = 'block';
+        
+        // Scroll to preview
+        this.bookPreview.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    showForm() {
+        this.bookForm.style.display = 'block';
+        this.bookPreview.style.display = 'none';
+    }
+    
+    createBookContent(title, author, style, structure) {
+        let html = `
+            <h1>${title}</h1>
+            <div class="book-metadata">
+                <p>By ${author}</p>
+                <p>${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+        `;
+        
+        // Add introduction based on style
+        html += this.generateIntroduction(title, style);
+        
+        // Add content based on structure
+        if (structure === 'chapters') {
+            html += this.generateChapters(style);
+        } else if (structure === 'sections') {
+            html += this.generateSections(style);
+        } else if (structure === 'qna') {
+            html += this.generateQnA(style);
+        } else if (structure === 'timeline') {
+            html += this.generateTimeline(style);
+        } else if (structure === 'comparison') {
+            html += this.generateComparison(style);
+        }
+        
+        // Add conclusion
+        html += this.generateConclusion(style);
+        
+        return html;
+    }
+    
+    generateIntroduction(title, style) {
+        const styleIntros = {
+            'academic': `<h2>Abstract</h2><p>This research document presents a comprehensive analysis of ${this.researchBot.currentResults?.topic || 'the subject matter'}, examining key aspects through rigorous investigation and scholarly inquiry.</p>`,
+            'narrative': `<h2>Introduction</h2><p>Welcome to this exploration of ${this.researchBot.currentResults?.topic || 'an fascinating journey'}. In this book, we'll discover the story behind the data, the people, and the impact on our world.</p>`,
+            'technical': `<h2>Overview</h2><p>This technical documentation provides detailed information about ${this.researchBot.currentResults?.topic || 'the system'}, including specifications, implementation details, and best practices.</p>`,
+            'educational': `<h2>Learning Objectives</h2><p>By the end of this book, you will understand the fundamental concepts of ${this.researchBot.currentResults?.topic || 'this subject'} and be able to apply this knowledge in practical scenarios.</p>`,
+            'executive': `<h2>Executive Summary</h2><p>This brief presents key findings and strategic insights regarding ${this.researchBot.currentResults?.topic || 'the topic'}, designed for quick decision-making and high-level understanding.</p>`,
+            'conversational': `<h2>Let's Talk About ${this.researchBot.currentResults?.topic || 'This'}</h2><p>Hey there! Let's dive into something really interesting together. We're going to explore ${this.researchBot.currentResults?.topic || 'this topic'} in a way that's easy to understand and fun to learn.</p>`
+        };
+        
+        return styleIntros[style] || styleIntros['conversational'];
+    }
+    
+    generateChapters(style) {
+        let html = '';
+        
+        this.selectedSections.forEach((section, index) => {
+            html += `
+                <div class="chapter">
+                    <h2>Chapter ${index + 1}: ${section.section}</h2>
+                    ${this.formatContent(section.details, style)}
+                    ${this.addConfidenceNote(section.confidence, style)}
+                </div>
+                ${index < this.selectedSections.length - 1 ? '<hr class="section-divider">' : ''}
+            `;
+        });
+        
+        return html;
+    }
+    
+    generateSections(style) {
+        let html = '';
+        
+        this.selectedSections.forEach((section, index) => {
+            html += `
+                <div class="chapter">
+                    <h2>${section.section}</h2>
+                    ${this.formatContent(section.details, style)}
+                    ${this.addConfidenceNote(section.confidence, style)}
+                </div>
+                ${index < this.selectedSections.length - 1 ? '<hr class="section-divider">' : ''}
+            `;
+        });
+        
+        return html;
+    }
+    
+    generateQnA(style) {
+        let html = '<h2>Questions & Answers</h2>';
+        
+        this.selectedSections.forEach((section, index) => {
+            html += `
+                <div class="chapter">
+                    <h3>Q: What should we know about ${section.section}?</h3>
+                    ${this.formatContent(section.details, style)}
+                    ${this.addConfidenceNote(section.confidence, style)}
+                </div>
+                ${index < this.selectedSections.length - 1 ? '<hr class="section-divider">' : ''}
+            `;
+        });
+        
+        return html;
+    }
+    
+    generateTimeline(style) {
+        let html = '<h2>Timeline of Key Points</h2>';
+        
+        this.selectedSections.forEach((section, index) => {
+            html += `
+                <div class="chapter">
+                    <h3>Stage ${index + 1}: ${section.section}</h3>
+                    ${this.formatContent(section.details, style)}
+                    ${this.addConfidenceNote(section.confidence, style)}
+                </div>
+                ${index < this.selectedSections.length - 1 ? '<hr class="section-divider">' : ''}
+            `;
+        });
+        
+        return html;
+    }
+    
+    generateComparison(style) {
+        let html = '<h2>Comparative Analysis</h2>';
+        
+        this.selectedSections.forEach((section, index) => {
+            html += `
+                <div class="chapter">
+                    <h3>${section.section}</h3>
+                    ${this.formatContent(section.details, style)}
+                    ${this.addConfidenceNote(section.confidence, style)}
+                </div>
+                ${index < this.selectedSections.length - 1 ? '<hr class="section-divider">' : ''}
+            `;
+        });
+        
+        return html;
+    }
+    
+    formatContent(content, style) {
+        const styleFormats = {
+            'academic': `<p>${content}</p>`,
+            'narrative': `<p>${content}</p>`,
+            'technical': `<p>${content}</p>`,
+            'educational': `<p>${content}</p><p><strong>Key Takeaway:</strong> Understanding this concept is essential for grasping the broader picture.</p>`,
+            'executive': `<p><strong>Key Points:</strong> ${content}</p>`,
+            'conversational': `<p>${content}</p><p>Pretty interesting, right?</p>`
+        };
+        
+        return styleFormats[style] || `<p>${content}</p>`;
+    }
+    
+    addConfidenceNote(confidence, style) {
+        if (style === 'academic' || style === 'technical') {
+            return `<p style="font-size: 0.875rem; color: var(--text-secondary); font-style: italic;">Research confidence level: ${confidence}%</p>`;
+        }
+        return '';
+    }
+    
+    generateConclusion(style) {
+        const styleConclusions = {
+            'academic': `<h2>Conclusion</h2><p>This research has provided comprehensive insights into ${this.researchBot.currentResults?.topic || 'the subject'}, establishing a foundation for further investigation and scholarly discourse.</p>`,
+            'narrative': `<h2>Final Thoughts</h2><p>And that brings us to the end of our journey through ${this.researchBot.currentResults?.topic || 'this story'}. We hope you've gained valuable insights and a new perspective on the topic.</p>`,
+            'technical': `<h2>Summary</h2><p>This documentation has covered the essential aspects of ${this.researchBot.currentResults?.topic || 'the system'}. For additional information, please refer to the appendices and references.</p>`,
+            'educational': `<h2>Conclusion</h2><p>Congratulations! You've now learned the key concepts about ${this.researchBot.currentResults?.topic || 'this subject'}. Practice these ideas to reinforce your understanding.</p>`,
+            'executive': `<h2>Recommendations</h2><p>Based on this analysis, stakeholders should consider the key findings presented and take appropriate strategic action regarding ${this.researchBot.currentResults?.topic || 'the matter'}.</p>`,
+            'conversational': `<h2>Wrapping Up</h2><p>Well, that's about it! Hopefully you now have a better understanding of ${this.researchBot.currentResults?.topic || 'everything we discussed'}. Thanks for reading!</p>`
+        };
+        
+        return styleConclusions[style] || styleConclusions['conversational'];
+    }
+    
+    exportHTML() {
+        const content = this.bookContent.innerHTML;
+        const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${document.getElementById('book-title').value}</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+        h1 { color: #6366f1; font-size: 2.5rem; text-align: center; }
+        h2 { color: #4f46e5; font-size: 1.75rem; margin-top: 2rem; border-bottom: 2px solid #818cf8; padding-bottom: 0.5rem; }
+        h3 { color: #1e293b; font-size: 1.25rem; margin-top: 1.5rem; }
+        p { margin-bottom: 1rem; text-align: justify; }
+        .book-metadata { text-align: center; color: #64748b; font-style: italic; margin-bottom: 3rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; }
+        .chapter { margin-bottom: 2rem; }
+        .section-divider { margin: 2rem 0; border: none; border-top: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+    ${content}
+</body>
+</html>`;
+        
+        const blob = new Blob([fullHTML], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${this.sanitizeFilename(document.getElementById('book-title').value)}.html`;
+        link.click();
+    }
+    
+    exportMarkdown() {
+        const title = document.getElementById('book-title').value;
+        const author = document.getElementById('book-author').value;
+        
+        let markdown = `# ${title}\n\n`;
+        markdown += `**By ${author}**\n\n`;
+        markdown += `*${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}*\n\n`;
+        markdown += `---\n\n`;
+        
+        const structure = document.getElementById('book-structure').value;
+        
+        if (structure === 'chapters') {
+            this.selectedSections.forEach((section, index) => {
+                markdown += `## Chapter ${index + 1}: ${section.section}\n\n`;
+                markdown += `${section.details}\n\n`;
+                markdown += `*Research confidence: ${section.confidence}%*\n\n`;
+                markdown += `---\n\n`;
+            });
+        } else {
+            this.selectedSections.forEach((section, index) => {
+                markdown += `## ${section.section}\n\n`;
+                markdown += `${section.details}\n\n`;
+                markdown += `*Research confidence: ${section.confidence}%*\n\n`;
+                markdown += `---\n\n`;
+            });
+        }
+        
+        const blob = new Blob([markdown], { type: 'text/markdown' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${this.sanitizeFilename(title)}.md`;
+        link.click();
+    }
+    
+    exportPDF() {
+        // Note: Real PDF generation would require a library like jsPDF or html2pdf
+        // For now, we'll provide a print dialog which allows saving as PDF
+        window.print();
+    }
+    
+    sanitizeFilename(filename) {
+        return filename.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    }
+}
+
+// ===================================
 // Initialize Application
 // ===================================
 
@@ -804,7 +1207,8 @@ class App {
         
         // Initialize all modules
         new Navigation();
-        new ResearchBot();
+        const researchBot = new ResearchBot();
+        new BookGenerator(researchBot);
         new AnimationController();
         new FormHandler();
         new PerformanceOptimizer();
