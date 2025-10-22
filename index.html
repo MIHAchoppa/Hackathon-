@@ -76,9 +76,16 @@
                             aria-label="Research topic"
                             required
                         >
+                        <button type="button" class="btn btn-icon" id="voice-input-btn" title="Voice input" aria-label="Record voice input">
+                            <span class="mic-icon">🎤</span>
+                        </button>
                         <button type="submit" class="btn btn-primary">Research</button>
                     </div>
                 </form>
+                <div class="voice-recording-status" id="voice-status" style="display: none;">
+                    <span class="recording-indicator"></span>
+                    <span class="status-text">Recording...</span>
+                </div>
             </div>
 
             <div class="research-results" id="research-results" style="display: none;">
