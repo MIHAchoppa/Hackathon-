@@ -27,6 +27,7 @@
             </button>
             <ul class="nav-menu">
                 <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#research" class="nav-link">Research</a></li>
                 <li><a href="#features" class="nav-link">Features</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#team" class="nav-link">Team</a></li>
@@ -56,6 +57,66 @@
             <span class="scroll-arrow">↓</span>
         </div>
     </header>
+
+    <!-- ResearchBot Section -->
+    <section id="research" class="research" aria-labelledby="research-heading">
+        <div class="container">
+            <h2 id="research-heading" class="section-title">AI ResearchBot</h2>
+            <p class="section-subtitle">Get intelligent research insights with confidence scoring on any topic</p>
+            
+            <div class="research-input-section">
+                <form class="research-form" aria-label="Research topic form">
+                    <div class="research-input-group">
+                        <input 
+                            type="text" 
+                            id="research-topic" 
+                            name="topic" 
+                            placeholder="Enter a topic (e.g., Electric Cars, AI Technology, Renewable Energy)"
+                            aria-label="Research topic"
+                            required
+                        >
+                        <button type="submit" class="btn btn-primary">Research</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="research-results" id="research-results" style="display: none;">
+                <div class="results-header">
+                    <h3 class="results-title">Research Results</h3>
+                    <div class="results-actions">
+                        <button class="btn btn-secondary btn-sm" id="export-json">Export JSON</button>
+                        <button class="btn btn-secondary btn-sm" id="export-csv">Export CSV</button>
+                    </div>
+                </div>
+                
+                <div class="confidence-legend">
+                    <span class="legend-item"><span class="confidence-indicator high"></span> High Confidence (90%+)</span>
+                    <span class="legend-item"><span class="confidence-indicator medium"></span> Medium Confidence (70-89%)</span>
+                    <span class="legend-item"><span class="confidence-indicator low"></span> Low Confidence (<70%)</span>
+                </div>
+
+                <div class="research-table-container">
+                    <table class="research-table">
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Details</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="research-table-body">
+                            <!-- Results will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="research-loading" id="research-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>AI is researching your topic...</p>
+            </div>
+        </div>
+    </section>
 
     <!-- Features Section -->
     <section id="features" class="features" aria-labelledby="features-heading">
@@ -265,6 +326,7 @@
                     <h3 class="footer-title">Quick Links</h3>
                     <ul class="footer-links">
                         <li><a href="#home">Home</a></li>
+                        <li><a href="#research">Research</a></li>
                         <li><a href="#features">Features</a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#team">Team</a></li>
