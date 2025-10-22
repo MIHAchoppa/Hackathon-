@@ -916,7 +916,7 @@ class BookGenerator {
         }
         
         // Generate book content based on style and structure
-        const bookHTML = this.createBookContent(title, author, style, structure);
+        const bookHTML = this.createBookContent(this.escapeHtml(title), this.escapeHtml(author), style, structure);
         
         // Display preview
         this.bookContent.innerHTML = bookHTML;
@@ -925,6 +925,12 @@ class BookGenerator {
         
         // Scroll to preview
         this.bookPreview.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     showForm() {
