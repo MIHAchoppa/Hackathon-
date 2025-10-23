@@ -1,0 +1,35 @@
+# Vercel Ignore
+# Files and directories to ignore during Vercel deployment
+
+# Backend files (not needed for static deployment)
+backend/
+*.py
+requirements.txt
+
+# Documentation (optional - remove if you want docs deployed)
+DEPLOYMENT.md
+DEMO_SCRIPT.md
+DEVPOST.md
+PROJECT_OVERVIEW.txt
+
+# Development files
+.git/
+.gitignore
+.vscode/
+.idea/
+*.log
+*.tmp
+
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+
+# Node modules (if any)
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.zip
