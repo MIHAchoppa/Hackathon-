@@ -4,6 +4,8 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![AWS](https://img.shields.io/badge/AWS-Bedrock-orange)](https://aws.amazon.com/bedrock/)
 [![Python](https://img.shields.io/badge/Python-3.11-blue)](https://python.org)
+[![Deploy](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/deploy.yml/badge.svg)](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/deploy.yml)
+[![Build](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/ci.yml/badge.svg)](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/ci.yml)
 
 > **Autonomous AI system that researches any topic, scores confidence, and generates comprehensive books—powered by AWS Bedrock, Groq, and intelligent probability reasoning.**
 
@@ -151,6 +153,22 @@ npm run deploy:aws
 ```
 
 📖 **See [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) for the complete deployment guide.**
+
+### ⚡ Automated Deployment
+
+This repository includes GitHub Actions workflows for automated deployment:
+
+**GitHub Pages (Automatic):**
+- Deploys automatically on push to `main` branch
+- No configuration needed - just push your changes!
+- Live at: [https://mihachoppa.github.io/Hackathon-/](https://mihachoppa.github.io/Hackathon-/)
+
+**Continuous Integration:**
+- Validates builds on every push and pull request
+- Ensures code quality before deployment
+- Uploads build artifacts for review
+
+📖 **See [.github/workflows/README.md](.github/workflows/README.md) for workflow documentation.**
 
 ### Quick Start (Local Development)
 
