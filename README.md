@@ -87,9 +87,27 @@
 
 ## 🚀 Getting Started
 
+### 🌐 Quick Deployment (Frontend Only)
+
+Want to deploy just the frontend quickly? We support multiple free hosting platforms:
+
+**Choose your platform:**
+- 🟢 **Netlify** - Recommended, 5-minute setup → [Quick Deploy Guide](QUICK_DEPLOY.md#option-1-netlify-recommended-for-static-sites-)
+- 🔵 **Vercel** - Great performance → [Quick Deploy Guide](QUICK_DEPLOY.md#option-2-vercel-great-for-nextjs--static-sites)
+- ⚫ **GitHub Pages** - Simplest setup → [Quick Deploy Guide](QUICK_DEPLOY.md#option-3-github-pages-simplest)
+- 🟠 **Cloudflare Pages** - Unlimited bandwidth → [Quick Deploy Guide](QUICK_DEPLOY.md#option-4-cloudflare-pages)
+
+**📖 See [QUICK_DEPLOY.md](QUICK_DEPLOY.md) for detailed step-by-step instructions.**
+
+*Note: Frontend-only deployment shows the UI but requires AWS backend for full functionality.*
+
 ### Prerequisites
 
-**Required:**
+**For Frontend Deployment:**
+- Git
+- GitHub account (for Netlify/Vercel/GitHub Pages)
+
+**For Full Stack (Frontend + Backend):**
 - AWS Account with:
   - AWS Bedrock access (request via console)
   - Lambda, S3, API Gateway permissions
@@ -132,15 +150,22 @@ python3 -m http.server 8000
 # Open http://localhost:8000
 ```
 
-### Full Deployment
+### Full Deployment Options
 
-See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete AWS deployment guide including:
-- S3 bucket creation
-- Lambda function deployment
-- API Gateway setup
-- IAM role configuration
-- CloudFront CDN setup
-- Monitoring and logging
+#### Option 1: Frontend Only (Quick - 5 minutes)
+Deploy the static website to Netlify, Vercel, or GitHub Pages:
+- ✅ **See [QUICK_DEPLOY.md](QUICK_DEPLOY.md)** for step-by-step instructions
+- UI will work, but backend features require AWS setup
+
+#### Option 2: Complete Full-Stack (AWS - 30-60 minutes)
+Deploy both frontend and backend for full functionality:
+- ✅ **See [DEPLOYMENT.md](DEPLOYMENT.md)** for complete AWS guide including:
+  - S3 bucket creation
+  - Lambda function deployment
+  - API Gateway setup
+  - IAM role configuration
+  - CloudFront CDN setup
+  - Monitoring and logging
 
 ## 📖 Usage
 

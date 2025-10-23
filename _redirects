@@ -1,0 +1,8 @@
+# Netlify Redirects
+# This file handles redirects and rewrites for the Netlify deployment
+
+# Proxy API requests to AWS API Gateway (optional - update with your API URL)
+# /api/*  https://your-api-gateway-url.execute-api.us-east-1.amazonaws.com/prod/:splat  200
+
+# Single Page Application (SPA) fallback - all routes serve index.html
+/*    /index.html   200
