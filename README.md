@@ -74,7 +74,7 @@
 ## 🎬 Demo
 
 ### Try It Live
-🌐 **Live Demo**: [Your deployed URL]
+🌐 **Live Demo**: [https://mihachoppa.github.io/Hackathon-/](https://mihachoppa.github.io/Hackathon-/)
 
 ### Sample Topics to Try
 - "Electric Cars" - See comprehensive research with high confidence
@@ -83,7 +83,7 @@
 - "Blockchain Technology" - Confidence scoring in action
 
 ### Video Walkthrough
-🎥 **3-Minute Demo**: [YouTube link]
+🎥 **3-Minute Demo**: See [DEMO_SCRIPT.md](DEMO_SCRIPT.md) for a complete demo walkthrough
 
 ## 🚀 Getting Started
 

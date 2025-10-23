@@ -129,7 +129,7 @@
 
 **[Final shot of the platform]**
 
-> "Try it yourself at [your URL]. Research any topic, see confidence scores, and get an AI-generated book—all powered by autonomous reasoning."
+> "Try it yourself at https://mihachoppa.github.io/Hackathon-/. Research any topic, see confidence scores, and get an AI-generated book—all powered by autonomous reasoning."
 
 > "Thank you!"
 
