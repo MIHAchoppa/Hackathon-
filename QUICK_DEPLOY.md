@@ -4,6 +4,48 @@ This guide provides simple instructions to deploy the AI Research & Book Generat
 
 ## 🚀 Deployment Options
 
+### Option 0: GitHub Pages (Automated - Easiest!) 🎯
+
+**Pros:**
+- ✅ **Fully Automated** - Deploys automatically on push to `main`
+- ✅ Free forever (100GB bandwidth/month)
+- ✅ Automatic HTTPS with github.io domain
+- ✅ Built-in CDN
+- ✅ Zero configuration required
+- ✅ No external account needed
+
+**Steps:**
+
+1. **Enable GitHub Pages** (One-time setup)
+   - Go to your repository on GitHub
+   - Click **Settings** → **Pages**
+   - Under "Source", select **GitHub Actions**
+   - That's it! The workflow is already set up.
+
+2. **Deploy**
+   ```bash
+   # Just push to main branch
+   git add .
+   git commit -m "Deploy updates"
+   git push origin main
+   ```
+   
+   The GitHub Actions workflow will automatically:
+   - Build the project
+   - Deploy to GitHub Pages
+   - Make it live at `https://yourusername.github.io/repository-name/`
+
+3. **Monitor Deployment**
+   - Go to **Actions** tab in your repository
+   - Watch the deployment progress in real-time
+   - Deployment typically takes 30-60 seconds
+
+**Your site will be live at:** `https://mihachoppa.github.io/Hackathon-/`
+
+**Note:** The automated workflow is defined in `.github/workflows/deploy.yml`. See [workflow documentation](.github/workflows/README.md) for details.
+
+---
+
 ### Option 1: Netlify (Recommended for Static Sites) ⭐
 
 **Pros:**
