@@ -119,6 +119,39 @@ Want to deploy just the frontend quickly? We support multiple free hosting platf
 - AWS CLI configured
 - Docker (for local Lambda testing)
 
+### 🚀 Quick Deployment (New!)
+
+The fastest way to get started with deployment using npm scripts:
+
+```bash
+# 1. Clone repository
+git clone https://github.com/MIHAchoppa/Hackathon-.git
+cd Hackathon-
+
+# 2. Set up environment variables (interactive)
+npm run setup:env
+
+# 3. Verify database/S3 setup
+npm run db:push
+
+# 4. Build the application
+npm run build
+
+# 5. Start the application
+npm start
+```
+
+**For complete AWS deployment:**
+```bash
+# Check prerequisites
+npm run deploy:prepare
+
+# Deploy to AWS (automated)
+npm run deploy:aws
+```
+
+📖 **See [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md) for the complete deployment guide.**
+
 ### Quick Start (Local Development)
 
 ```bash
@@ -248,6 +281,14 @@ Hackathon-/
 │   │   └── orchestrator.py         # Workflow orchestration & autonomous reasoning
 │   └── requirements.txt        # Python dependencies
 │
+├── scripts/                    # Deployment and build scripts
+│   ├── build.js                    # Build production artifacts
+│   ├── db-migrate.js               # Database/S3 migration verification
+│   ├── start-server.js             # Development server
+│   ├── setup-env.js                # Interactive environment setup
+│   ├── deploy-prepare.js           # Pre-deployment validation
+│   └── deploy-aws.sh               # Automated AWS deployment
+│
 ├── docs/                       # Documentation
 │   └── architecture/           # Architecture diagrams & specs
 │       └── ARCHITECTURE.md         # Detailed system architecture
@@ -260,9 +301,13 @@ Hackathon-/
 ├── script.js                   # Frontend JavaScript (includes ResearchBot)
 ├── styles.css                  # Application styling
 │
+├── package.json                # npm configuration and deployment scripts
+├── .env.example                # Environment variables template
+│
 ├── README.md                   # This file - main documentation
 ├── DEVPOST.md                  # Devpost submission content
 ├── DEPLOYMENT.md               # AWS deployment instructions
+├── DEPLOYMENT_CHECKLIST.md     # Step-by-step deployment guide
 ├── DEMO_SCRIPT.md              # 3-minute demo walkthrough
 ├── FRONTEND.md                 # Frontend-specific documentation
 │
@@ -277,6 +322,7 @@ Hackathon-/
 - **[DEMO_SCRIPT.md](DEMO_SCRIPT.md)** - 3-minute demo walkthrough
 
 ### For Developers
+- **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** - Step-by-step deployment guide with npm scripts
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete AWS deployment guide
 - **[docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)** - System architecture details
 - **[backend/lambda/](backend/lambda/)** - Well-commented Lambda function code
