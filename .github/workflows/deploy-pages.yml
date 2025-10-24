@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      publish_dir: ${{ steps.set-publish-dir.outputs.publish_dir }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (if package.json exists)
+        if: "[ -f package.json ]"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install & Build (if package.json exists)
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+            if npm run | grep -q "build"; then
+              npm run build
+            else
+              echo "No build script defined — skipping build step"
+            fi
+          else
+            echo "No package.json — skipping npm install/build"
+          fi
+
+      - name: Determine publish directory
+        id: set-publish-dir
+        run: |
+          if [ -d "./build" ]; then
+            echo "publish_dir=./build" >> $GITHUB_OUTPUT
+            echo "Using ./build as publish directory"
+          elif [ -d "./dist" ]; then
+            echo "publish_dir=./dist" >> $GITHUB_OUTPUT
+            echo "Using ./dist as publish directory"
+          elif [ -d "./public" ]; then
+            echo "publish_dir=./public" >> $GITHUB_OUTPUT
+            echo "Using ./public as publish directory"
+          else
+            echo "publish_dir=." >> $GITHUB_OUTPUT
+            echo "No common build output found — using repository root as publish directory"
+          fi
+
+      - name: List publish files (debug)
+        run: |
+          echo "Publish dir: ${{ steps.set-publish-dir.outputs.publish_dir }}"
+          ls -la ${{ steps.set-publish-dir.outputs.publish_dir }} || true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ${{ steps.set-publish-dir.outputs.publish_dir }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v3
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
