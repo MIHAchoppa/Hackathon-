@@ -88,7 +88,7 @@ function createBuildDir() {
 function copyFrontendFiles(buildDir) {
   console.log('📦 Copying frontend files to build...');
   
-  const files = ['index.html', 'script.js', 'styles.css', 'status.html', '404.html', 'robots.txt', '_redirects', 'manifest.json'];
+  const files = ['index.html', 'script.js', 'styles.css', 'status.html', '404.html', 'robots.txt', '_redirects', 'manifest.json', 'sitemap.xml'];
   
   for (const file of files) {
     const src = path.join(__dirname, '..', file);

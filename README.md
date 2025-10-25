@@ -6,6 +6,8 @@
 [![Python](https://img.shields.io/badge/Python-3.11-blue)](https://python.org)
 [![Deploy](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/deploy.yml/badge.svg)](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/deploy.yml)
 [![Build](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/ci.yml/badge.svg)](https://github.com/MIHAchoppa/Hackathon-/actions/workflows/ci.yml)
+[![Deployment Status](https://img.shields.io/badge/Deployment-Active-success)](https://mihachoppa.github.io/Hackathon-/)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fmihachoppa.github.io%2FHackathon-%2F)](https://mihachoppa.github.io/Hackathon-/)
 
 > **Autonomous AI system that researches any topic, scores confidence, and generates comprehensive books—powered by AWS Bedrock, Groq, and intelligent probability reasoning.**
 
@@ -78,6 +80,8 @@
 ### Try It Live
 🌐 **Live Demo**: [https://mihachoppa.github.io/Hackathon-/](https://mihachoppa.github.io/Hackathon-/)
 
+📊 **Deployment Status**: [Status Page](https://mihachoppa.github.io/Hackathon-/status.html)
+
 ### Sample Topics to Try
 - "Electric Cars" - See comprehensive research with high confidence
 - "Artificial Intelligence" - Complex topic with book generation
@@ -89,14 +93,31 @@
 
 ## 🚀 Getting Started
 
-### 🌐 Quick Deployment (Frontend Only)
+### 🌐 Quick Deployment (Automated - Easiest!)
 
-Want to deploy just the frontend quickly? We support multiple free hosting platforms:
+**The app is already deployed and live!** 🎉
+
+- **Live URL**: [https://mihachoppa.github.io/Hackathon-/](https://mihachoppa.github.io/Hackathon-/)
+- **Auto-Deploy**: Pushes to `main` branch automatically deploy via GitHub Actions
+- **Status Check**: [Deployment Status](https://mihachoppa.github.io/Hackathon-/status.html)
+
+**Want to deploy your own copy?**
+```bash
+# 1. Fork this repository
+# 2. Enable GitHub Pages in Settings → Pages
+# 3. Push to main - automatic deployment!
+```
+
+📖 **See [DEPLOY_GUIDE.md](DEPLOY_GUIDE.md) for complete deployment instructions.**
+
+### Alternative Deployment Platforms
+
+Want to deploy just the frontend to other platforms?
 
 **Choose your platform:**
 - 🟢 **Netlify** - Recommended, 5-minute setup → [Quick Deploy Guide](QUICK_DEPLOY.md#option-1-netlify-recommended-for-static-sites-)
 - 🔵 **Vercel** - Great performance → [Quick Deploy Guide](QUICK_DEPLOY.md#option-2-vercel-great-for-nextjs--static-sites)
-- ⚫ **GitHub Pages** - Simplest setup → [Quick Deploy Guide](QUICK_DEPLOY.md#option-3-github-pages-simplest)
+- ⚫ **GitHub Pages** - Already configured and live! → [DEPLOY_GUIDE.md](DEPLOY_GUIDE.md)
 - 🟠 **Cloudflare Pages** - Unlimited bandwidth → [Quick Deploy Guide](QUICK_DEPLOY.md#option-4-cloudflare-pages)
 
 **📖 See [QUICK_DEPLOY.md](QUICK_DEPLOY.md) for detailed step-by-step instructions.**
