@@ -24,7 +24,10 @@ function checkRequiredFiles() {
     'README.md': 'Documentation',
     'netlify.toml': 'Netlify configuration',
     'vercel.json': 'Vercel configuration',
-    '_redirects': 'Netlify redirects'
+    '_redirects': 'Netlify redirects',
+    'status.html': 'Status page',
+    '404.html': 'Error page',
+    'robots.txt': 'SEO configuration'
   };
   
   for (const [file, description] of Object.entries(files)) {

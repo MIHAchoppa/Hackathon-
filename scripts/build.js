@@ -88,13 +88,17 @@ function createBuildDir() {
 function copyFrontendFiles(buildDir) {
   console.log('📦 Copying frontend files to build...');
   
-  const files = ['index.html', 'script.js', 'styles.css'];
+  const files = ['index.html', 'script.js', 'styles.css', 'status.html', '404.html', 'robots.txt', '_redirects', 'manifest.json'];
   
   for (const file of files) {
     const src = path.join(__dirname, '..', file);
-    const dest = path.join(buildDir, file);
-    fs.copyFileSync(src, dest);
-    console.log(`  ✅ Copied ${file}`);
+    if (fs.existsSync(src)) {
+      const dest = path.join(buildDir, file);
+      fs.copyFileSync(src, dest);
+      console.log(`  ✅ Copied ${file}`);
+    } else {
+      console.log(`  ⚠️  Skipped ${file} (not found)`);
+    }
   }
   
   console.log('✅ Frontend files ready\n');
