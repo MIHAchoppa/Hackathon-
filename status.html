@@ -192,11 +192,12 @@
         const hostname = window.location.hostname;
         let platform = 'Unknown';
         
-        if (hostname.includes('github.io')) {
+        // Use exact domain matching instead of substring for security
+        if (hostname === 'mihachoppa.github.io' || hostname.endsWith('.github.io')) {
             platform = 'GitHub Pages';
-        } else if (hostname.includes('netlify')) {
+        } else if (hostname.endsWith('.netlify.app') || hostname.endsWith('.netlify.com')) {
             platform = 'Netlify';
-        } else if (hostname.includes('vercel')) {
+        } else if (hostname.endsWith('.vercel.app')) {
             platform = 'Vercel';
         } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
             platform = 'Local Development';
