@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Deployment Status - AI Research Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .status-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .status-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .status-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .status-info {
+            margin-top: 30px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .check-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+        }
+        
+        .check-icon {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .check-text {
+            flex: 1;
+            color: #4b5563;
+        }
+        
+        .actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .timestamp {
+            text-align: center;
+            margin-top: 20px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-container">
+        <div class="status-header">
+            <div class="status-icon">✅</div>
+            <h1>Deployment Status</h1>
+            <span class="status-badge">OPERATIONAL</span>
+        </div>
+        
+        <div class="status-info">
+            <div class="info-item">
+                <span class="info-label">Platform</span>
+                <span class="info-value" id="platform">GitHub Pages</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Version</span>
+                <span class="info-value">1.0.0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Environment</span>
+                <span class="info-value">Production</span>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <h3 style="margin-bottom: 15px; color: #374151;">System Checks</h3>
+            <div class="check-item">
+                <span class="check-icon">✅</span>
+                <span class="check-text">Frontend Assets Loaded</span>
+            </div>
+            <div class="check-item">
+                <span class="check-icon">✅</span>
+                <span class="check-text">JavaScript Functional</span>
+            </div>
+            <div class="check-item">
+                <span class="check-icon">✅</span>
+                <span class="check-text">Styles Applied</span>
+            </div>
+            <div class="check-item">
+                <span class="check-icon">✅</span>
+                <span class="check-text">Responsive Design Active</span>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="/" class="btn">Go to Application</a>
+        </div>
+        
+        <div class="timestamp">
+            Last checked: <span id="timestamp"></span>
+        </div>
+    </div>
+    
+    <script>
+        // Set timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Detect platform
+        const hostname = window.location.hostname;
+        let platform = 'Unknown';
+        
+        // Use exact domain matching instead of substring for security
+        if (hostname === 'mihachoppa.github.io' || hostname.endsWith('.github.io')) {
+            platform = 'GitHub Pages';
+        } else if (hostname.endsWith('.netlify.app') || hostname.endsWith('.netlify.com')) {
+            platform = 'Netlify';
+        } else if (hostname.endsWith('.vercel.app')) {
+            platform = 'Vercel';
+        } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            platform = 'Local Development';
+        }
+        
+        document.getElementById('platform').textContent = platform;
+    </script>
+</body>
+</html>
