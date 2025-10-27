@@ -832,6 +832,7 @@ class BookGenerator {
         document.getElementById('download-html')?.addEventListener('click', () => this.exportHTML());
         document.getElementById('download-pdf')?.addEventListener('click', () => this.exportPDF());
         document.getElementById('download-markdown')?.addEventListener('click', () => this.exportMarkdown());
+        document.getElementById('download-kindle')?.addEventListener('click', () => this.exportKindle());
     }
     
     openBookGenerator() {
@@ -1137,6 +1138,192 @@ class BookGenerator {
         link.href = URL.createObjectURL(blob);
         link.download = `${this.sanitizeFilename(document.getElementById('book-title').value)}.html`;
         link.click();
+    }
+    
+    exportKindle() {
+        // Export in Amazon Kindle-compatible HTML format
+        // This format is optimized for Kindle Direct Publishing (KDP)
+        // and can be easily converted to MOBI/EPUB using Kindle Create or KindleGen
+        
+        const title = this.escapeHtml(document.getElementById('book-title').value);
+        const author = this.escapeHtml(document.getElementById('book-author').value);
+        const content = this.bookContent.innerHTML;
+        
+        // Generate table of contents
+        let toc = '<h2>Table of Contents</h2><nav><ol>';
+        this.selectedSections.forEach((section, index) => {
+            toc += `<li><a href="#section-${index}">${this.escapeHtml(section.section)}</a></li>`;
+        });
+        toc += '</ol></nav>';
+        
+        // Create Kindle-optimized HTML with proper metadata and structure
+        const kindleHTML = `<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>${title}</title>
+    <meta name="author" content="${author}"/>
+    <meta name="description" content="${title} by ${author}"/>
+    <meta name="generator" content="Hackathon Book Generator"/>
+    <style type="text/css">
+        /* Amazon Kindle-optimized styles */
+        body {
+            font-family: serif;
+            line-height: 1.6;
+            margin: 1em;
+            color: #000;
+            background-color: #fff;
+        }
+        
+        h1 {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin: 1.5em 0;
+            page-break-before: always;
+        }
+        
+        h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 1.2em 0 0.8em 0;
+            page-break-after: avoid;
+        }
+        
+        h3 {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 1em 0 0.6em 0;
+            page-break-after: avoid;
+        }
+        
+        p {
+            margin: 0.8em 0;
+            text-align: justify;
+            text-indent: 1.5em;
+        }
+        
+        p:first-child,
+        h1 + p,
+        h2 + p,
+        h3 + p {
+            text-indent: 0;
+        }
+        
+        .book-metadata {
+            text-align: center;
+            font-style: italic;
+            margin: 2em 0;
+            page-break-after: always;
+        }
+        
+        .book-metadata p {
+            text-indent: 0;
+            text-align: center;
+        }
+        
+        .chapter {
+            margin-bottom: 2em;
+            page-break-before: always;
+        }
+        
+        .section-divider {
+            margin: 2em 0;
+            border: none;
+            border-top: 1px solid #999;
+            page-break-after: avoid;
+        }
+        
+        nav ol {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        nav li {
+            margin: 0.5em 0;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #000;
+        }
+        
+        /* Kindle-specific page breaks */
+        .page-break {
+            page-break-after: always;
+        }
+        
+        @media amzn-kf8 {
+            /* Kindle Fire and newer Kindle-specific styles */
+            body {
+                font-family: serif;
+            }
+        }
+        
+        @media amzn-mobi {
+            /* Older Kindle MOBI-specific styles */
+            body {
+                font-family: serif;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Title Page -->
+    <div class="page-break">
+        <h1>${title}</h1>
+        <div class="book-metadata">
+            <p><strong>By ${author}</strong></p>
+            <p>${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
+    </div>
+    
+    <!-- Table of Contents -->
+    <div class="page-break">
+        ${toc}
+    </div>
+    
+    <!-- Book Content -->
+    ${this.formatKindleContent(content)}
+</body>
+</html>`;
+        
+        const blob = new Blob([kindleHTML], { type: 'text/html;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${this.sanitizeFilename(document.getElementById('book-title').value)}-kindle.html`;
+        link.click();
+        
+        // Show helpful message
+        setTimeout(() => {
+            alert('Amazon Kindle format downloaded!\n\nTo publish on Amazon:\n1. Upload this HTML file to Amazon Kindle Direct Publishing (KDP)\n2. Or convert to MOBI/EPUB using Kindle Create or Calibre\n3. The file is optimized for Kindle e-readers');
+        }, 500);
+    }
+    
+    formatKindleContent(content) {
+        // Add IDs to sections for table of contents navigation
+        let formattedContent = content;
+        this.selectedSections.forEach((section, index) => {
+            const sectionTitle = this.escapeHtml(section.section);
+            // Add id attribute to h2 elements for TOC linking
+            const patterns = [
+                new RegExp(`<h2>Chapter ${index + 1}: ${sectionTitle}</h2>`, 'g'),
+                new RegExp(`<h2>${sectionTitle}</h2>`, 'g'),
+                new RegExp(`<h3>Q: What should we know about ${sectionTitle}\\?</h3>`, 'g'),
+                new RegExp(`<h3>Stage ${index + 1}: ${sectionTitle}</h3>`, 'g')
+            ];
+            
+            patterns.forEach(pattern => {
+                formattedContent = formattedContent.replace(pattern, (match) => {
+                    // Add id to the heading
+                    return match.replace('<h2>', `<h2 id="section-${index}">`)
+                                .replace('<h3>', `<h3 id="section-${index}">`);
+                });
+            });
+        });
+        
+        return formattedContent;
     }
     
     exportMarkdown() {
