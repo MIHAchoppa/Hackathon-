@@ -67,6 +67,53 @@
             <h2 id="research-heading" class="section-title">AI ResearchBot</h2>
             <p class="section-subtitle">Get intelligent research insights with confidence scoring on any topic</p>
             
+            <!-- Autonomous Mode Toggle -->
+            <div class="autonomous-mode-toggle">
+                <label class="toggle-container">
+                    <input type="checkbox" id="autonomous-mode-toggle" aria-label="Enable autonomous mode">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label">🤖 Autonomous Mode</span>
+                </label>
+            </div>
+
+            <!-- Autonomous Mode Configuration -->
+            <div class="autonomous-config" id="autonomous-config" style="display: none;">
+                <div class="config-panel">
+                    <h3>Autonomous Configuration</h3>
+                    <div class="config-row">
+                        <div class="config-group">
+                            <label for="auto-topic-select">Topic Selection</label>
+                            <select id="auto-topic-select">
+                                <option value="predefined">Pre-defined Topics</option>
+                                <option value="random">Random Topics</option>
+                            </select>
+                        </div>
+                        <div class="config-group">
+                            <label for="auto-interval">Execution Interval</label>
+                            <select id="auto-interval">
+                                <option value="30">Every 30 seconds</option>
+                                <option value="60">Every 1 minute</option>
+                                <option value="300">Every 5 minutes</option>
+                                <option value="600">Every 10 minutes</option>
+                                <option value="1800">Every 30 minutes</option>
+                            </select>
+                        </div>
+                        <div class="config-group">
+                            <label for="auto-book-generation">Auto-generate Books</label>
+                            <input type="checkbox" id="auto-book-generation" checked>
+                        </div>
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn btn-primary" id="start-autonomous">Start Autonomous Mode</button>
+                        <button class="btn btn-secondary" id="stop-autonomous" style="display: none;">Stop Autonomous Mode</button>
+                    </div>
+                    <div class="autonomous-status" id="autonomous-status">
+                        <span class="status-indicator inactive"></span>
+                        <span class="status-text">Inactive</span>
+                    </div>
+                </div>
+            </div>
+            
             <div class="research-input-section">
                 <form class="research-form" aria-label="Research topic form">
                     <div class="research-input-group">
