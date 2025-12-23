@@ -528,6 +528,9 @@ class ResearchBot {
         this.loadingContainer = document.getElementById('research-loading');
         this.tableBody = document.getElementById('research-table-body');
         this.currentResults = null;
+        this.autonomousMode = false;
+        this.autonomousTopics = ['Electric Cars', 'AI Technology', 'Renewable Energy', 'Quantum Computing', 'Blockchain'];
+        this.autonomousIndex = 0;
         
         this.init();
     }
@@ -540,6 +543,67 @@ class ResearchBot {
         // Export buttons
         document.getElementById('export-json')?.addEventListener('click', () => this.exportJSON());
         document.getElementById('export-csv')?.addEventListener('click', () => this.exportCSV());
+        
+        // Autonomous mode toggle
+        document.getElementById('toggle-autonomous')?.addEventListener('click', () => this.toggleAutonomousMode());
+    }
+    
+    toggleAutonomousMode() {
+        this.autonomousMode = !this.autonomousMode;
+        const button = document.getElementById('toggle-autonomous');
+        
+        if (this.autonomousMode) {
+            button.textContent = '⏸️ Stop Auto Mode';
+            button.classList.add('active');
+            this.runAutonomous();
+        } else {
+            button.textContent = '▶️ Start Auto Mode';
+            button.classList.remove('active');
+        }
+    }
+    
+    async runAutonomous() {
+        if (!this.autonomousMode) return;
+        
+        // Get next topic
+        const topic = this.autonomousTopics[this.autonomousIndex % this.autonomousTopics.length];
+        this.autonomousIndex++;
+        
+        // Update input field
+        const topicInput = document.getElementById('research-topic');
+        if (topicInput) {
+            topicInput.value = topic;
+        }
+        
+        // Show loading
+        this.showLoading();
+        
+        try {
+            // Simulate AI research with delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Generate research results
+            const results = this.generateResearch(topic);
+            this.currentResults = { topic, results };
+            
+            // Display results
+            this.displayResults(results);
+            
+            // Auto-select all sections for book generation
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const checkboxes = document.querySelectorAll('.section-checkbox');
+            checkboxes.forEach(cb => cb.checked = true);
+            
+        } catch (error) {
+            console.error('Autonomous research error:', error);
+        } finally {
+            this.hideLoading();
+            
+            // Continue autonomous mode after delay
+            if (this.autonomousMode) {
+                setTimeout(() => this.runAutonomous(), 5000);
+            }
+        }
     }
     
     async handleSubmit(e) {
@@ -811,6 +875,7 @@ class BookGenerator {
         this.bookContent = document.getElementById('book-content');
         this.selectedSectionsList = document.getElementById('selected-sections-list');
         this.selectedSections = [];
+        this.autonomousMode = false;
         
         this.init();
     }
@@ -822,6 +887,9 @@ class BookGenerator {
         // Generate book button
         document.getElementById('generate-book')?.addEventListener('click', () => this.generateBook());
         
+        // Auto Generate button
+        document.getElementById('auto-generate-book')?.addEventListener('click', () => this.autoGenerateBook());
+        
         // Cancel button
         document.getElementById('cancel-book')?.addEventListener('click', () => this.closeBookGenerator());
         
@@ -832,6 +900,48 @@ class BookGenerator {
         document.getElementById('download-html')?.addEventListener('click', () => this.exportHTML());
         document.getElementById('download-pdf')?.addEventListener('click', () => this.exportPDF());
         document.getElementById('download-markdown')?.addEventListener('click', () => this.exportMarkdown());
+    }
+    
+    async autoGenerateBook() {
+        // Automatically generate a book with default settings
+        if (!this.researchBot.currentResults) {
+            alert('Please run research first before generating a book.');
+            return;
+        }
+        
+        // Select all sections
+        const checkboxes = document.querySelectorAll('.section-checkbox');
+        checkboxes.forEach(cb => cb.checked = true);
+        
+        // Open book generator
+        this.openBookGenerator();
+        
+        // Auto-fill form with defaults
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const titleInput = document.getElementById('book-title');
+        const authorInput = document.getElementById('book-author');
+        const styleSelect = document.getElementById('book-style');
+        const structureSelect = document.getElementById('book-structure');
+        
+        if (!titleInput.value) {
+            titleInput.value = `Complete Guide to ${this.researchBot.currentResults.topic}`;
+        }
+        if (!authorInput.value) {
+            authorInput.value = 'AI ResearchBot';
+        }
+        
+        // Set default style and structure if not set
+        if (!styleSelect.value) {
+            styleSelect.value = 'educational';
+        }
+        if (!structureSelect.value) {
+            structureSelect.value = 'chapters';
+        }
+        
+        // Auto-generate the book
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.generateBook();
     }
     
     openBookGenerator() {
